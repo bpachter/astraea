@@ -24,13 +24,26 @@ THEMIS_GATE_URL = os.environ.get("THEMIS_GATE_URL", "http://localhost:5210")
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-bpi4@_s1kysvx0sg&lfx==(vtnn2mpv9(bnuzt&7jzhf(t65xh"
+# Env-driven with a demo default: the insecure key never guards anything but
+# the local seeded demo database; a deployment must set DJANGO_SECRET_KEY.
+SECRET_KEY = os.environ.get(
+    "DJANGO_SECRET_KEY",
+    "django-insecure-bpi4@_s1kysvx0sg&lfx==(vtnn2mpv9(bnuzt&7jzhf(t65xh",
+)
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get("DJANGO_DEBUG", "1") == "1"
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+ALLOWED_HOSTS = [
+    h.strip()
+    for h in os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
+    if h.strip()
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    o.strip()
+    for o in os.environ.get("DJANGO_CSRF_TRUSTED_ORIGINS", "").split(",")
+    if o.strip()
+]
 
 
 # Application definition
