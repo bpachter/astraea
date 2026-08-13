@@ -1,0 +1,71 @@
+[
+  {
+    "survivor_name": "Pratt & Whitney",
+    "loser_name": "Pratt",
+    "shared_identity": false,
+    "survivor_substance": {
+      "live_edges": 120,
+      "federal_contracts": 40,
+      "federal_contract_usd": 2000000000,
+      "has_ticker": false,
+      "has_intel_id": true,
+      "has_lei": true
+    },
+    "loser_substance": {
+      "live_edges": 2,
+      "federal_contracts": 0,
+      "federal_contract_usd": 0,
+      "has_ticker": false,
+      "has_intel_id": false,
+      "has_lei": false
+    },
+    "note": "Historical case, preserved as a demonstration: this merge was proposed and killed because federal_contracts holds PRATT & MILLER ENGINEERING, a different company. A merge is a permanent auto-resolution rule for all future extractions — the gate must refuse single-token names that arrive without an identity bridge.",
+    "demo": true
+  },
+  {
+    "survivor_name": "Halcyon Marine Systems (synthetic press stub)",
+    "loser_name": "HALCYON MARINE HOLDINGS, LLC (synthetic)",
+    "shared_identity": true,
+    "survivor_substance": {
+      "live_edges": 2,
+      "federal_contracts": 0,
+      "federal_contract_usd": 0,
+      "has_ticker": false,
+      "has_intel_id": false,
+      "has_lei": false
+    },
+    "loser_substance": {
+      "live_edges": 9,
+      "federal_contracts": 88,
+      "federal_contract_usd": 13470000000,
+      "has_ticker": false,
+      "has_intel_id": true,
+      "has_lei": false
+    },
+    "note": "Synthetic demonstration modeling the $134.7B lesson: the 'loser' is a legal-name node holding the federal contracts, about to be retired into a bare press stub. The gate flags the direction; substance chooses survivors, not name shape.",
+    "demo": true
+  },
+  {
+    "survivor_name": "The Boeing Company",
+    "loser_name": "Boeing",
+    "shared_identity": true,
+    "survivor_substance": {
+      "live_edges": 300,
+      "federal_contracts": 200,
+      "federal_contract_usd": 50000000000,
+      "has_ticker": true,
+      "has_intel_id": true,
+      "has_lei": true
+    },
+    "loser_substance": {
+      "live_edges": 12,
+      "federal_contracts": 0,
+      "federal_contract_usd": 0,
+      "has_ticker": false,
+      "has_intel_id": true,
+      "has_lei": false
+    },
+    "note": "Demonstration of the merge the gate allows: a single-token duplicate carried by a shared intel_id bridge, retiring into the substance-holding legal-name node. Name shape never suffices; hard identity evidence does.",
+    "demo": true
+  }
+]

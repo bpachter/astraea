@@ -13,14 +13,19 @@ class GateUnreachable(Exception):
     pass
 
 
-def reconcile(proposal):
-    """POST one proposal to the gate; return its verdict dict."""
-    url = f"{settings.THEMIS_GATE_URL}/reconcile"
+def call_gate(path, body):
+    """POST a request body to one gate endpoint; return its verdict dict."""
+    url = f"{settings.THEMIS_GATE_URL}{path}"
     try:
-        response = requests.post(url, json=proposal.gate_request_body, timeout=10)
+        response = requests.post(url, json=body, timeout=10)
         response.raise_for_status()
     except requests.RequestException as exc:
         raise GateUnreachable(
             f"Reconciliation gate unreachable at {url} — is Themis.Gate running? ({exc})"
         ) from exc
     return response.json()
+
+
+def reconcile(proposal):
+    """POST one segment proposal to the gate; return its verdict dict."""
+    return call_gate("/reconcile", proposal.gate_request_body)

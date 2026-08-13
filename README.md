@@ -77,6 +77,52 @@ Approve `Apple Inc.` and it goes through with your name on the review.
 Django's default port 8000 sits inside a Windows excluded-port range on some machines;
 any port works (`runserver 8642`). The gate URL is configurable via `THEMIS_GATE_URL`.
 
+## Two modes: seeded demo, or a live graph
+
+Out of the box Themis runs on the seeded public data below. Pointed at a live
+Thessa graph (`THESSA_GATE_URL`-style env: `THESSA_KG_DB`), three commands put
+the **real** backlog through the same governance — strictly read-only; the
+connector opens SQLite in `mode=ro` and decisions leave as a JSON log
+(`manage.py export_decisions`) for the graph's own dry-run-by-default sweeps
+to apply:
+
+```bash
+python manage.py import_kg        # ontology census + pending drafts + retypes, with per-node substance
+python manage.py run_gate         # batch the .NET gate over every queue
+python manage.py export_decisions # decisions out as a JSON log; Themis never writes the graph
+```
+
+Substance is counted across **every** node-referencing column, enumerated from
+a single authoritative list filtered against the connected schema — because
+hand-written subsets of that list once called $134.7B of federal contracts
+"orphans."
+
+### What happened the first time this ran against the real graph
+
+`import_kg` brought in 1,083 pending supply edges and 20 pending node retypes.
+The gate passed every edge — and refused **14 of the 20 retypes** as
+`substance_demotion`: a name-shape heuristic ("article/quantifier-led phrase,
+not a discrete entity") was proposing to demote, among others, The Aerospace
+Corporation (213 federal contracts, $9.1B), Two Six Labs ("Two" read as a
+quantifier — $438M), and Five Stones Research ($154M). In total: nodes holding
+~$10.9B across 632 federal contracts, all public USAspending data. Provenance
+beats name shape; the gate makes that a refusal instead of a memory.
+
+The six that passed hold no contracts and almost no edges — and that is the
+gate's honest boundary: it refuses *provable* errors and leaves judgment calls
+(The MathWorks with three edges and no contracts) to the human reviewer it
+feeds. A gate is a floor, not a verdict.
+
+## Ontology law (the identity rules, typed)
+
+Beyond revenue reconciliation, the gate enforces the graph's identity rules:
+
+| endpoint | refuses | rule |
+|---|---|---|
+| `POST /validate-edge` | `self_edge`, `usd_column_carries_foreign_currency`, `unscoped_id`, `multi_maker_product` | a yen figure in a USD column reads as ~150x; ids scope to their owner; a product has exactly one maker |
+| `POST /validate-merge` | `bare_name_merge`, `merge_direction_suspect` | never merge a bare surname or acronym on name evidence (PRATT & MILLER is not Pratt & Whitney); survivors are chosen on substance |
+| `POST /validate-retype` | `substance_demotion` | nodes holding contracts, tickers, or identity bridges cannot be demoted to "generic" |
+
 ## The seed data is honest
 
 Two proposals are real — Apple and Microsoft FY2023 reportable segments in **whole USD**,

@@ -3,7 +3,7 @@ from unittest.mock import patch
 from django.contrib.auth.models import User
 from django.test import TestCase
 
-from .models import Proposal
+from .models import EdgeProposal, MergeProposal, Proposal, TypeProposal
 
 PUBLISHABLE_VERDICT = {
     "publishable": True,
@@ -95,3 +95,61 @@ class AdjudicationApiTests(TestCase):
             content_type="application/json",
         )
         self.assertIn(response.status_code, (401, 403))
+
+
+class GovernedProposalTests(TestCase):
+    """The approval guard and the gate contracts for the KG-backed queues."""
+
+    def test_can_approve_requires_a_passing_gate_verdict(self):
+        edge = EdgeProposal.objects.create(
+            kg_draft_id=1, supplier_id="a", customer_id="b"
+        )
+        self.assertFalse(edge.can_approve)  # pending, never gated
+
+        edge.status = EdgeProposal.STATUS_GATED
+        edge.gate_status = "self_edge"
+        self.assertFalse(edge.can_approve)  # gated but refused
+
+        edge.gate_status = "publishable"
+        self.assertTrue(edge.can_approve)
+
+    def test_edge_gate_request_body_matches_the_dto_contract(self):
+        edge = EdgeProposal.objects.create(
+            kg_draft_id=2,
+            supplier_id="a",
+            customer_id="b",
+            disclosed_value=1_000_000.0,
+            disclosed_currency="JPY",
+        )
+        body = edge.gate_request_body
+        self.assertEqual(body["edge_kind"], "supplies")
+        self.assertEqual(body["disclosed_currency"], "JPY")
+        self.assertIsNone(body["contract_value_usd"])
+        self.assertEqual(
+            set(body),
+            {
+                "edge_kind", "supplier_id", "customer_id", "target_id", "target_kind",
+                "existing_maker_count", "component_desc", "confidence",
+                "disclosed_value", "disclosed_currency", "contract_value_usd",
+            },
+        )
+
+    def test_retype_and_merge_bodies_carry_substance(self):
+        substance = {
+            "live_edges": 1, "federal_contracts": 3, "federal_contract_usd": 42_000_000.0,
+            "has_ticker": False, "has_intel_id": False, "has_lei": False,
+        }
+        retype = TypeProposal.objects.create(
+            kg_item_id=1, ref_id="n1", name="Patriot Team",
+            current_type="organization", proposed_type="generic",
+            source="rule", substance=substance,
+        )
+        self.assertEqual(retype.gate_request_body["substance"], substance)
+
+        merge = MergeProposal.objects.create(
+            survivor_name="Pratt & Whitney", loser_name="Pratt",
+            survivor_substance=substance, loser_substance={},
+        )
+        body = merge.gate_request_body
+        self.assertFalse(body["shared_identity"])
+        self.assertEqual(body["survivor"], substance)

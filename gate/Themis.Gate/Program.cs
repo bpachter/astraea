@@ -25,9 +25,21 @@ app.UseCors();
 
 app.MapGet("/healthz", () => Results.Ok(new { status = "ok", service = "themis-gate" }));
 
-app.MapGet("/failure-modes", () => Results.Ok(ReconciliationEngine.FailureModes));
+app.MapGet("/failure-modes", () => Results.Ok(
+    ReconciliationEngine.FailureModes
+        .Concat(OntologyLaw.FailureModes)
+        .ToDictionary(kv => kv.Key, kv => kv.Value)));
 
 app.MapPost("/reconcile", (ExtractionProposal proposal) =>
     Results.Ok(ReconciliationEngine.Evaluate(proposal)));
+
+app.MapPost("/validate-edge", (EdgeProposalDto edge) =>
+    Results.Ok(OntologyLaw.ValidateEdge(edge)));
+
+app.MapPost("/validate-merge", (MergeProposalDto merge) =>
+    Results.Ok(OntologyLaw.ValidateMerge(merge)));
+
+app.MapPost("/validate-retype", (RetypeProposalDto retype) =>
+    Results.Ok(OntologyLaw.ValidateRetype(retype)));
 
 app.Run();
