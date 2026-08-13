@@ -90,6 +90,6 @@ not.
 ## Credentials boundary
 
 Account setup, billing, IAM user/role creation, and `aws configure` are the
-operator's steps — credentials never enter the assistant loop or the repo. The
+operator's steps — credentials never enter tooling, scripts, or the repo. The
 GitHub Actions role uses OIDC federation, so no AWS secret is ever stored in
 GitHub either.
