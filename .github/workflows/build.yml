@@ -1,0 +1,81 @@
+# Build, test, and publish Themis's images.
+#
+# Runners build the containers (registry access is clean from GitHub's
+# network) and publish to GitHub Container Registry; the AWS ship pulls from
+# ghcr and pushes to ECR. Phase 3 extends the publish job with an
+# OIDC-assumed IAM role to deploy App Runner + S3 directly — no long-lived
+# AWS keys in this repository, ever.
+name: build
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - name: Test
+        run: dotnet test gate/Themis.sln --nologo
+      - name: Log in to ghcr
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push image
+        run: |
+          docker build -t ghcr.io/${{ github.repository }}-gate:latest \
+                       -t ghcr.io/${{ github.repository }}-gate:${{ github.sha }} gate
+          docker push --all-tags ghcr.io/${{ github.repository }}-gate
+
+  portal:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Test
+        working-directory: portal
+        run: |
+          pip install -r requirements.txt
+          python manage.py test adjudication
+      - name: Log in to ghcr
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push image
+        run: |
+          docker build -f portal/Dockerfile \
+                       -t ghcr.io/${{ github.repository }}-portal:latest \
+                       -t ghcr.io/${{ github.repository }}-portal:${{ github.sha }} .
+          docker push --all-tags ghcr.io/${{ github.repository }}-portal
+
+  recon:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Typecheck and build
+        working-directory: recon
+        run: |
+          npm ci
+          npm run build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: recon-dist
+          path: recon/dist
