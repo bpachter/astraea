@@ -50,20 +50,24 @@ autoscaling, and per-service health checks out of the box.
 
 ## Status
 
-Phase 1 (containerize): **portal image built and smoke-verified** — gunicorn up,
-WhiteNoise serving admin static, baked demo db carrying exactly the 7 seeded
-proposals + 3 demo merges and zero live-KG rows (the repo-root `.dockerignore`
-excludes any local database by design). The gate Dockerfile is written but its
-image is **unverified**: `mcr.microsoft.com` was unreachable from the build
-machine at the time (registry EOF on every pull over ~10 minutes; Docker Hub
-fine). When MCR is reachable again, the full loop verifies with one command:
+**Phase 1 complete, fully verified.** Both images build in CI
+(`.github/workflows/build.yml`: gate xUnit + portal Django suites gate the
+builds; images publish to ghcr.io with `latest` + sha tags) — CI became the
+image factory when the original build machine couldn't reach
+`mcr.microsoft.com`. Cross-container loop verified live: the ghcr-built gate
+answering `/healthz` from the portal's network, and `manage.py run_gate`
+inside the portal adjudicating the baked demo data against the containerized
+gate with correct named verdicts. The baked db carries exactly the public
+seed and zero live-KG rows.
 
-```bash
-docker compose up --build
-```
-
-— then log into http://localhost:8642 (demo / themis-demo) and run the
-"Run reconciliation gate (.NET)" admin action against the seeded proposals.
+**Phase 2 scripted, awaiting credentials.** `deploy/ship-phase2.ps1` executes
+the whole ship — ECR repos + pushes, the App Runner ECR-access role, both
+services with env wiring (gate URL into the portal, portal origin into the
+gate's CORS, generated `DJANGO_SECRET_KEY`), and the S3 sync — once the
+operator has run `aws configure`. CloudFront distribution is the scripted
+follow-up after the domain/cert decision. API-plane reachability from the
+build machine is confirmed (STS TLS clean) even while Amazon's CDN hosts are
+not.
 
 ## Phases
 
