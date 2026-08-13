@@ -736,6 +736,11 @@ h4 {
 
 /* ---------- primer (walkthrough view) ---------- */
 
+.pr-tracks {
+  display: inline-flex;
+  margin-top: 18px;
+}
+
 .pr-layout {
   display: grid;
   grid-template-columns: 280px minmax(0, 1fr);

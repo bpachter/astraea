@@ -35,6 +35,17 @@ export interface PrimerChapter {
   reconLinks: PrimerLink[];
 }
 
+export interface PrimerTrack {
+  id: string;
+  tab: string;
+  title: string;
+  lede: string;
+  credit: string;
+  /** localStorage key for chapter completion — stable per track. */
+  doneKey: string;
+  chapters: PrimerChapter[];
+}
+
 export const PRIMER_TITLE = "Metabolomics, from zero";
 export const PRIMER_LEDE =
   "A hand-holding walkthrough from foundations to the implications that matter " +

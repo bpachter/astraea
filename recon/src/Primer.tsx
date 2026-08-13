@@ -1,43 +1,49 @@
 import { useEffect, useMemo, useState } from "react";
 import { Frame } from "./components";
-import {
-  PRIMER_CHAPTERS,
-  PRIMER_CREDIT,
-  PRIMER_LEDE,
-  PRIMER_TITLE,
-} from "./primer-content";
+import { PRIMER_TRACKS } from "./primer-tracks";
 
-const DONE_KEY = "mr-primer-done";
+const TRACK_KEY = "mr-primer-track";
 
-function loadDone(): Set<string> {
+function loadDone(doneKey: string): Set<string> {
   try {
-    return new Set(JSON.parse(localStorage.getItem(DONE_KEY) ?? "[]") as string[]);
+    return new Set(JSON.parse(localStorage.getItem(doneKey) ?? "[]") as string[]);
   } catch {
     return new Set();
   }
 }
 
 export function Primer({ onJumpToNode }: { onJumpToNode: (id: string) => void }) {
+  const [trackId, setTrackId] = useState(
+    () => localStorage.getItem(TRACK_KEY) ?? PRIMER_TRACKS[0].id,
+  );
+  const track =
+    PRIMER_TRACKS.find((t) => t.id === trackId) ?? PRIMER_TRACKS[0];
   const [index, setIndex] = useState(0);
-  const [done, setDone] = useState<Set<string>>(loadDone);
-  const chapter = PRIMER_CHAPTERS[index];
+  const [done, setDone] = useState<Set<string>>(() => loadDone(track.doneKey));
+  const chapter = track.chapters[Math.min(index, track.chapters.length - 1)];
 
   useEffect(() => {
-    localStorage.setItem(DONE_KEY, JSON.stringify([...done]));
-  }, [done]);
+    localStorage.setItem(TRACK_KEY, track.id);
+    setDone(loadDone(track.doneKey));
+    setIndex(0);
+  }, [track.id, track.doneKey]);
+
+  useEffect(() => {
+    localStorage.setItem(track.doneKey, JSON.stringify([...done]));
+  }, [done, track.doneKey]);
 
   useEffect(() => {
     window.scrollTo({ top: 0 });
-  }, [index]);
+  }, [index, track.id]);
 
   const progress = useMemo(
-    () => `${done.size} OF ${PRIMER_CHAPTERS.length} CHAPTERS COMPLETE`,
-    [done],
+    () => `${done.size} OF ${track.chapters.length} CHAPTERS COMPLETE`,
+    [done, track],
   );
 
   const markDone = () => {
     setDone((prev) => new Set(prev).add(chapter.id));
-    if (index < PRIMER_CHAPTERS.length - 1) setIndex(index + 1);
+    if (index < track.chapters.length - 1) setIndex(index + 1);
   };
 
   return (
@@ -45,15 +51,27 @@ export function Primer({ onJumpToNode }: { onJumpToNode: (id: string) => void })
       <div className="mr-kicker">
         THE DOMAIN, HAND-HELD — FOUNDATIONS FIRST, IMPLICATIONS LAST
       </div>
-      <h1 className="mr-h1">{PRIMER_TITLE}</h1>
-      <p className="mr-lede">{PRIMER_LEDE}</p>
+      <h1 className="mr-h1">{track.title}</h1>
+      <p className="mr-lede">{track.lede}</p>
+
+      <nav className="mr-views pr-tracks" aria-label="Primer track">
+        {PRIMER_TRACKS.map((t) => (
+          <button
+            key={t.id}
+            className={t.id === track.id ? "active" : ""}
+            onClick={() => setTrackId(t.id)}
+          >
+            {t.tab}
+          </button>
+        ))}
+      </nav>
 
       <div className="pr-layout">
         <nav className="bp-frame pr-toc" aria-label="Chapters">
           <Frame />
           <div className="pr-toc-inner">
             <div className="mr-cat-heading">{progress}</div>
-            {PRIMER_CHAPTERS.map((c, i) => (
+            {track.chapters.map((c, i) => (
               <button
                 key={c.id}
                 className={`pr-toc-item${i === index ? " active" : ""}`}
@@ -131,13 +149,13 @@ export function Primer({ onJumpToNode }: { onJumpToNode: (id: string) => void })
             </button>
             <button className="done-btn" onClick={markDone}>
               {done.has(chapter.id)
-                ? index < PRIMER_CHAPTERS.length - 1
+                ? index < track.chapters.length - 1
                   ? "NEXT →"
                   : "DONE ✓"
                 : "MARK COMPLETE & CONTINUE →"}
             </button>
             <button
-              disabled={index === PRIMER_CHAPTERS.length - 1}
+              disabled={index === track.chapters.length - 1}
               onClick={() => setIndex(index + 1)}
             >
               NEXT →
@@ -146,7 +164,7 @@ export function Primer({ onJumpToNode }: { onJumpToNode: (id: string) => void })
         </article>
       </div>
 
-      <footer className="mr-footer">{PRIMER_CREDIT}</footer>
+      <footer className="mr-footer">{track.credit}</footer>
     </section>
   );
 }
