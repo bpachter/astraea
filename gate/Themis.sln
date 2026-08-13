@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Themis.Gate", "Themis.Gate\Themis.Gate.csproj", "{DA4A1A1C-91C4-4EB1-BA8A-CC823D7FF08A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Themis.Gate.Tests", "Themis.Gate.Tests\Themis.Gate.Tests.csproj", "{D57DE2B7-32B5-44EF-B0B7-FED07FBB91EC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DA4A1A1C-91C4-4EB1-BA8A-CC823D7FF08A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA4A1A1C-91C4-4EB1-BA8A-CC823D7FF08A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA4A1A1C-91C4-4EB1-BA8A-CC823D7FF08A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA4A1A1C-91C4-4EB1-BA8A-CC823D7FF08A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D57DE2B7-32B5-44EF-B0B7-FED07FBB91EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D57DE2B7-32B5-44EF-B0B7-FED07FBB91EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D57DE2B7-32B5-44EF-B0B7-FED07FBB91EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D57DE2B7-32B5-44EF-B0B7-FED07FBB91EC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

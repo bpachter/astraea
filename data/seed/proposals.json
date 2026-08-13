@@ -1,0 +1,123 @@
+[
+  {
+    "company": "Apple Inc.",
+    "fiscal_year": 2023,
+    "synthetic": false,
+    "proposed_by": "extraction-flywheel",
+    "source_url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0000320193&type=10-K",
+    "source_note": "FY2023 Form 10-K, segment information note (reportable geographic segments), values in whole USD",
+    "citation_check": "Independent citation check (precomputed for demo): the five rows are Apple's reportable geographic segments as presented in the FY2023 10-K segment note; no product-line rows are mixed into the list; the sum ties exactly to consolidated net sales of $383.285B reported on the income statement of the same filing.",
+    "payload": {
+      "consolidated_revenue_usd": 383285000000,
+      "segments": [
+        { "name": "Americas", "revenue_usd": 162560000000, "kind": "segment" },
+        { "name": "Europe", "revenue_usd": 94294000000, "kind": "segment" },
+        { "name": "Greater China", "revenue_usd": 72559000000, "kind": "segment" },
+        { "name": "Japan", "revenue_usd": 24257000000, "kind": "segment" },
+        { "name": "Rest of Asia Pacific", "revenue_usd": 29615000000, "kind": "segment" }
+      ]
+    }
+  },
+  {
+    "company": "Microsoft Corporation",
+    "fiscal_year": 2023,
+    "synthetic": false,
+    "proposed_by": "extraction-flywheel",
+    "source_url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0000789019&type=10-K",
+    "source_note": "FY2023 Form 10-K (year ended June 30, 2023), segment note (three reportable segments), values in whole USD",
+    "citation_check": "Independent citation check (precomputed for demo): Productivity and Business Processes, Intelligent Cloud, and More Personal Computing are the three reportable segments in the FY2023 10-K; the sum ties exactly to consolidated revenue of $211.915B in the same filing.",
+    "payload": {
+      "consolidated_revenue_usd": 211915000000,
+      "segments": [
+        { "name": "Productivity and Business Processes", "revenue_usd": 69274000000, "kind": "segment" },
+        { "name": "Intelligent Cloud", "revenue_usd": 87907000000, "kind": "segment" },
+        { "name": "More Personal Computing", "revenue_usd": 54734000000, "kind": "segment" }
+      ]
+    }
+  },
+  {
+    "company": "Halcyon Marine Holdings (synthetic)",
+    "fiscal_year": 2024,
+    "synthetic": true,
+    "proposed_by": "extraction-flywheel",
+    "source_url": "",
+    "source_note": "Synthetic clean case: segments plus a negative corporate/eliminations reconciling row tie to consolidated",
+    "citation_check": "Synthetic demonstration case. Models the common real-filing shape where operating segments overshoot consolidated revenue and a reconciling eliminations row brings the sum back into tie.",
+    "payload": {
+      "consolidated_revenue_usd": 7600000000,
+      "segments": [
+        { "name": "Marine Systems", "revenue_usd": 5000000000, "kind": "segment" },
+        { "name": "Port Services", "revenue_usd": 3000000000, "kind": "segment" },
+        { "name": "Corporate & eliminations", "revenue_usd": -400000000, "kind": "reconciling" }
+      ]
+    }
+  },
+  {
+    "company": "Meridian Fabrication Systems (synthetic)",
+    "fiscal_year": 2024,
+    "synthetic": true,
+    "proposed_by": "extraction-flywheel",
+    "source_url": "",
+    "source_note": "Synthetic failure case: a 'Total Segments' row rode along in the extracted list",
+    "citation_check": "Synthetic demonstration case. Models undetected_rollup: every individual row is correct, but the extractor also captured the total row, so the naive sum is exactly double. This is the failure shape behind real-world +126% segment sums.",
+    "payload": {
+      "consolidated_revenue_usd": 8500000000,
+      "segments": [
+        { "name": "Precision Tooling", "revenue_usd": 4200000000, "kind": "segment" },
+        { "name": "Automation", "revenue_usd": 2800000000, "kind": "segment" },
+        { "name": "Aftermarket", "revenue_usd": 1500000000, "kind": "segment" },
+        { "name": "Total Segments", "revenue_usd": 8500000000, "kind": "segment" }
+      ]
+    }
+  },
+  {
+    "company": "Aster Analytics Group (synthetic)",
+    "fiscal_year": 2024,
+    "synthetic": true,
+    "proposed_by": "extraction-flywheel",
+    "source_url": "",
+    "source_note": "Synthetic failure case: geographic and product dimensions flattened into one segment list",
+    "citation_check": "Synthetic demonstration case. Models duplicate_facts: the filing reports revenue by geography AND by product line; both dimensions were extracted into one list, so each dollar is counted twice and the sum lands at ~2x consolidated.",
+    "payload": {
+      "consolidated_revenue_usd": 1000000000,
+      "segments": [
+        { "name": "Americas", "revenue_usd": 600000000, "kind": "segment" },
+        { "name": "International", "revenue_usd": 400000000, "kind": "segment" },
+        { "name": "Platform", "revenue_usd": 700000000, "kind": "segment" },
+        { "name": "Services", "revenue_usd": 300000000, "kind": "segment" }
+      ]
+    }
+  },
+  {
+    "company": "Bexley Industrial Holdings (synthetic)",
+    "fiscal_year": 2024,
+    "synthetic": true,
+    "proposed_by": "extraction-flywheel",
+    "source_url": "",
+    "source_note": "Synthetic failure case: no consolidated figure was extracted from the filing",
+    "citation_check": "Synthetic demonstration case. Models no_consolidated: segment rows exist but the consolidated anchor from the same filing is missing, so the sum is unverifiable and must not publish.",
+    "payload": {
+      "consolidated_revenue_usd": null,
+      "segments": [
+        { "name": "Industrial Coatings", "revenue_usd": 2100000000, "kind": "segment" },
+        { "name": "Specialty Chemicals", "revenue_usd": 1700000000, "kind": "segment" }
+      ]
+    }
+  },
+  {
+    "company": "Corvid Dynamics (synthetic)",
+    "fiscal_year": 2024,
+    "synthetic": true,
+    "proposed_by": "extraction-flywheel",
+    "source_url": "",
+    "source_note": "Synthetic failure case: plausible-looking rows that simply do not tie to consolidated",
+    "citation_check": "Synthetic demonstration case. Models unreconciled: every row looks reasonable in isolation and the sum is off by +26.5% — the exact kind of plausible wrong number that is undetectable downstream without the gate.",
+    "payload": {
+      "consolidated_revenue_usd": 9800000000,
+      "segments": [
+        { "name": "Defense Systems", "revenue_usd": 7400000000, "kind": "segment" },
+        { "name": "Commercial Aviation", "revenue_usd": 5000000000, "kind": "segment" }
+      ]
+    }
+  }
+]

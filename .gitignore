@@ -1,0 +1,16 @@
+# .NET
+bin/
+obj/
+*.user
+.vs/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+db.sqlite3
+staticfiles/
+
+# OS / editor
+.DS_Store
+Thumbs.db
