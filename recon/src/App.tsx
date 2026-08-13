@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { Canvas } from "./Canvas";
 import {
   Dossier,
@@ -12,7 +12,9 @@ import {
 import { Primer } from "./Primer";
 import type { EdgeFamily, NodeClass, ReconGraph, ThemeName } from "./types";
 
-export type View = "graph" | "primer";
+const Atlas = lazy(() => import("./Atlas"));
+
+export type View = "graph" | "primer" | "atlas";
 
 export interface Palette {
   classColor: (key: string) => string;
@@ -142,8 +144,12 @@ export default function App() {
             <Shortlist graph={graph} onJump={selectAndScroll} />
             <Footer disclaimer={graph.meta.disclaimer} />
           </>
-        ) : (
+        ) : view === "primer" ? (
           <Primer onJumpToNode={selectAndScroll} />
+        ) : (
+          <Suspense fallback={<p className="mr-lede">Loading the atlas…</p>}>
+            <Atlas theme={theme} />
+          </Suspense>
         )}
       </div>
     </div>

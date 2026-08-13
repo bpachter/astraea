@@ -36,6 +36,9 @@ export function Header({
         <button className={view === "primer" ? "active" : ""} onClick={() => onView("primer")}>
           PRIMER
         </button>
+        <button className={view === "atlas" ? "active" : ""} onClick={() => onView("atlas")}>
+          ATLAS
+        </button>
       </nav>
       <span className="mr-tag">PRINCIPAL SDE INTERVIEW</span>
       <span className="mr-prepared">PREPARED AUG 13, 2026</span>

@@ -1,0 +1,1226 @@
+{
+ "model": {
+  "id": "HumanGEM",
+  "name": "Generic genome-scale metabolic model of Homo sapiens",
+  "version": "2.0.0",
+  "date": "2026-03-26",
+  "sourceUrl": "https://github.com/SysBioChalmers/Human-GEM",
+  "license": "CC-BY-4.0",
+  "citation": "Robinson, J.L. et al. An atlas of human metabolism. Sci. Signal. 13, eaaz1482 (2020). Model: Human-GEM, SysBioChalmers, CC-BY-4.0."
+ },
+ "totals": {
+  "metabolites": 8461,
+  "reactions": 12931,
+  "genes": 2848,
+  "subsystems": 147
+ },
+ "layers": [
+  {
+   "index": 0,
+   "key": "genome",
+   "title": "GENOME",
+   "note": "genes from gene-reaction rules (Ensembl)"
+  },
+  {
+   "index": 1,
+   "key": "catalysis",
+   "title": "REACTIONS",
+   "note": "enzyme-catalyzed steps carry gene-reaction rules (the proteome acting); exchange, pool, and artificial entries are modeling constructs, not catalysis"
+  },
+  {
+   "index": 2,
+   "key": "metabolome",
+   "title": "METABOLOME",
+   "note": "metabolites with compartments and identifiers"
+  }
+ ],
+ "compartments": {
+  "e": "Extracellular",
+  "x": "Peroxisome",
+  "m": "Mitochondria",
+  "c": "Cytosol",
+  "l": "Lysosome",
+  "r": "Endoplasmic reticulum",
+  "g": "Golgi apparatus",
+  "n": "Nucleus",
+  "i": "Inner mitochondria"
+ },
+ "subsystems": [
+  {
+   "name": "Acyl-CoA hydrolysis",
+   "slug": "acyl-coa-hydrolysis",
+   "genes": 9,
+   "reactions": 68,
+   "metabolites": 142,
+   "links": 550
+  },
+  {
+   "name": "Acylglycerides metabolism",
+   "slug": "acylglycerides-metabolism",
+   "genes": 38,
+   "reactions": 21,
+   "metabolites": 37,
+   "links": 262
+  },
+  {
+   "name": "Alanine, aspartate and glutamate metabolism",
+   "slug": "alanine-aspartate-and-glutamate-metabolism",
+   "genes": 35,
+   "reactions": 41,
+   "metabolites": 85,
+   "links": 250
+  },
+  {
+   "name": "Alkaloids biosynthesis",
+   "slug": "alkaloids-biosynthesis",
+   "genes": 0,
+   "reactions": 2,
+   "metabolites": 8,
+   "links": 9
+  },
+  {
+   "name": "Amino sugar and nucleotide sugar metabolism",
+   "slug": "amino-sugar-and-nucleotide-sugar-metabolism",
+   "genes": 31,
+   "reactions": 38,
+   "metabolites": 75,
+   "links": 201
+  },
+  {
+   "name": "Aminoacyl-tRNA biosynthesis",
+   "slug": "aminoacyl-trna-biosynthesis",
+   "genes": 21,
+   "reactions": 21,
+   "metabolites": 66,
+   "links": 146
+  },
+  {
+   "name": "Androgen metabolism",
+   "slug": "androgen-metabolism",
+   "genes": 22,
+   "reactions": 36,
+   "metabolites": 63,
+   "links": 264
+  },
+  {
+   "name": "Arachidonic acid metabolism",
+   "slug": "arachidonic-acid-metabolism",
+   "genes": 105,
+   "reactions": 138,
+   "metabolites": 192,
+   "links": 1762
+  },
+  {
+   "name": "Arginine and proline metabolism",
+   "slug": "arginine-and-proline-metabolism",
+   "genes": 56,
+   "reactions": 99,
+   "metabolites": 170,
+   "links": 727
+  },
+  {
+   "name": "Artificial reactions",
+   "slug": "artificial-reactions",
+   "genes": 0,
+   "reactions": 18,
+   "metabolites": 420,
+   "links": 623
+  },
+  {
+   "name": "Ascorbate and aldarate metabolism",
+   "slug": "ascorbate-and-aldarate-metabolism",
+   "genes": 10,
+   "reactions": 15,
+   "metabolites": 34,
+   "links": 76
+  },
+  {
+   "name": "Beta oxidation of branched-chain fatty acids (mitochondrial)",
+   "slug": "beta-oxidation-of-branched-chain-fatty-acids-mitochondrial",
+   "genes": 9,
+   "reactions": 13,
+   "metabolites": 23,
+   "links": 80
+  },
+  {
+   "name": "Beta oxidation of di-unsaturated fatty acids (n-6) (mitochondrial)",
+   "slug": "beta-oxidation-of-di-unsaturated-fatty-acids-n-6-mitochondrial",
+   "genes": 13,
+   "reactions": 18,
+   "metabolites": 28,
+   "links": 118
+  },
+  {
+   "name": "Beta oxidation of di-unsaturated fatty acids (n-6) (peroxisomal)",
+   "slug": "beta-oxidation-of-di-unsaturated-fatty-acids-n-6-peroxisomal",
+   "genes": 9,
+   "reactions": 18,
+   "metabolites": 28,
+   "links": 119
+  },
+  {
+   "name": "Beta oxidation of even-chain fatty acids (mitochondrial)",
+   "slug": "beta-oxidation-of-even-chain-fatty-acids-mitochondrial",
+   "genes": 14,
+   "reactions": 57,
+   "metabolites": 66,
+   "links": 668
+  },
+  {
+   "name": "Beta oxidation of even-chain fatty acids (peroxisomal)",
+   "slug": "beta-oxidation-of-even-chain-fatty-acids-peroxisomal",
+   "genes": 9,
+   "reactions": 50,
+   "metabolites": 59,
+   "links": 345
+  },
+  {
+   "name": "Beta oxidation of odd-chain fatty acids (mitochondrial)",
+   "slug": "beta-oxidation-of-odd-chain-fatty-acids-mitochondrial",
+   "genes": 11,
+   "reactions": 38,
+   "metabolites": 47,
+   "links": 257
+  },
+  {
+   "name": "Beta oxidation of odd-chain fatty acids (peroxisomal)",
+   "slug": "beta-oxidation-of-odd-chain-fatty-acids-peroxisomal",
+   "genes": 0,
+   "reactions": 1,
+   "metabolites": 10,
+   "links": 10
+  },
+  {
+   "name": "Beta oxidation of phytanic acid (peroxisomal)",
+   "slug": "beta-oxidation-of-phytanic-acid-peroxisomal",
+   "genes": 13,
+   "reactions": 20,
+   "metabolites": 43,
+   "links": 126
+  },
+  {
+   "name": "Beta oxidation of poly-unsaturated fatty acids (mitochondrial)",
+   "slug": "beta-oxidation-of-poly-unsaturated-fatty-acids-mitochondrial",
+   "genes": 8,
+   "reactions": 22,
+   "metabolites": 34,
+   "links": 138
+  },
+  {
+   "name": "Beta oxidation of unsaturated fatty acids (n-7) (mitochondrial)",
+   "slug": "beta-oxidation-of-unsaturated-fatty-acids-n-7-mitochondrial",
+   "genes": 12,
+   "reactions": 17,
+   "metabolites": 26,
+   "links": 113
+  },
+  {
+   "name": "Beta oxidation of unsaturated fatty acids (n-7) (peroxisomal)",
+   "slug": "beta-oxidation-of-unsaturated-fatty-acids-n-7-peroxisomal",
+   "genes": 9,
+   "reactions": 8,
+   "metabolites": 17,
+   "links": 54
+  },
+  {
+   "name": "Beta oxidation of unsaturated fatty acids (n-9) (mitochondrial)",
+   "slug": "beta-oxidation-of-unsaturated-fatty-acids-n-9-mitochondrial",
+   "genes": 12,
+   "reactions": 21,
+   "metabolites": 30,
+   "links": 140
+  },
+  {
+   "name": "Beta oxidation of unsaturated fatty acids (n-9) (peroxisomal)",
+   "slug": "beta-oxidation-of-unsaturated-fatty-acids-n-9-peroxisomal",
+   "genes": 9,
+   "reactions": 38,
+   "metabolites": 47,
+   "links": 255
+  },
+  {
+   "name": "Beta-alanine metabolism",
+   "slug": "beta-alanine-metabolism",
+   "genes": 18,
+   "reactions": 16,
+   "metabolites": 43,
+   "links": 116
+  },
+  {
+   "name": "Bile acid biosynthesis",
+   "slug": "bile-acid-biosynthesis",
+   "genes": 89,
+   "reactions": 256,
+   "metabolites": 301,
+   "links": 1725
+  },
+  {
+   "name": "Bile acid recycling",
+   "slug": "bile-acid-recycling",
+   "genes": 16,
+   "reactions": 33,
+   "metabolites": 40,
+   "links": 275
+  },
+  {
+   "name": "Biopterin metabolism",
+   "slug": "biopterin-metabolism",
+   "genes": 12,
+   "reactions": 27,
+   "metabolites": 41,
+   "links": 138
+  },
+  {
+   "name": "Biotin metabolism",
+   "slug": "biotin-metabolism",
+   "genes": 2,
+   "reactions": 12,
+   "metabolites": 32,
+   "links": 62
+  },
+  {
+   "name": "Blood group biosynthesis",
+   "slug": "blood-group-biosynthesis",
+   "genes": 16,
+   "reactions": 49,
+   "metabolites": 59,
+   "links": 306
+  },
+  {
+   "name": "Butanoate metabolism",
+   "slug": "butanoate-metabolism",
+   "genes": 17,
+   "reactions": 9,
+   "metabolites": 33,
+   "links": 58
+  },
+  {
+   "name": "C5-branched dibasic acid metabolism",
+   "slug": "c5-branched-dibasic-acid-metabolism",
+   "genes": 6,
+   "reactions": 9,
+   "metabolites": 17,
+   "links": 56
+  },
+  {
+   "name": "Carnitine shuttle (cytosolic)",
+   "slug": "carnitine-shuttle-cytosolic",
+   "genes": 3,
+   "reactions": 57,
+   "metabolites": 117,
+   "links": 393
+  },
+  {
+   "name": "Carnitine shuttle (endoplasmic reticular)",
+   "slug": "carnitine-shuttle-endoplasmic-reticular",
+   "genes": 6,
+   "reactions": 131,
+   "metabolites": 197,
+   "links": 673
+  },
+  {
+   "name": "Carnitine shuttle (mitochondrial)",
+   "slug": "carnitine-shuttle-mitochondrial",
+   "genes": 7,
+   "reactions": 112,
+   "metabolites": 172,
+   "links": 706
+  },
+  {
+   "name": "Carnitine shuttle (peroxisomal)",
+   "slug": "carnitine-shuttle-peroxisomal",
+   "genes": 6,
+   "reactions": 8,
+   "metabolites": 15,
+   "links": 41
+  },
+  {
+   "name": "Cholesterol biosynthesis 1 (Bloch pathway)",
+   "slug": "cholesterol-biosynthesis-1-bloch-pathway",
+   "genes": 19,
+   "reactions": 27,
+   "metabolites": 42,
+   "links": 185
+  },
+  {
+   "name": "Cholesterol biosynthesis 2",
+   "slug": "cholesterol-biosynthesis-2",
+   "genes": 3,
+   "reactions": 4,
+   "metabolites": 11,
+   "links": 28
+  },
+  {
+   "name": "Cholesterol biosynthesis 3 (Kandustch-Russell pathway)",
+   "slug": "cholesterol-biosynthesis-3-kandustch-russell-pathway",
+   "genes": 9,
+   "reactions": 16,
+   "metabolites": 24,
+   "links": 120
+  },
+  {
+   "name": "Cholesterol metabolism",
+   "slug": "cholesterol-metabolism",
+   "genes": 31,
+   "reactions": 60,
+   "metabolites": 127,
+   "links": 371
+  },
+  {
+   "name": "Chondroitin / heparan sulfate biosynthesis",
+   "slug": "chondroitin-heparan-sulfate-biosynthesis",
+   "genes": 43,
+   "reactions": 45,
+   "metabolites": 58,
+   "links": 347
+  },
+  {
+   "name": "Chondroitin sulfate degradation",
+   "slug": "chondroitin-sulfate-degradation",
+   "genes": 16,
+   "reactions": 44,
+   "metabolites": 45,
+   "links": 323
+  },
+  {
+   "name": "Cysteine and methionine metabolism",
+   "slug": "cysteine-and-methionine-metabolism",
+   "genes": 42,
+   "reactions": 46,
+   "metabolites": 100,
+   "links": 281
+  },
+  {
+   "name": "Dietary fiber binding",
+   "slug": "dietary-fiber-binding",
+   "genes": 0,
+   "reactions": 12,
+   "metabolites": 21,
+   "links": 39
+  },
+  {
+   "name": "Drug metabolism",
+   "slug": "drug-metabolism",
+   "genes": 52,
+   "reactions": 572,
+   "metabolites": 534,
+   "links": 2728
+  },
+  {
+   "name": "Eicosanoid metabolism",
+   "slug": "eicosanoid-metabolism",
+   "genes": 42,
+   "reactions": 60,
+   "metabolites": 139,
+   "links": 380
+  },
+  {
+   "name": "Estrogen metabolism",
+   "slug": "estrogen-metabolism",
+   "genes": 65,
+   "reactions": 66,
+   "metabolites": 114,
+   "links": 972
+  },
+  {
+   "name": "Ether lipid metabolism",
+   "slug": "ether-lipid-metabolism",
+   "genes": 43,
+   "reactions": 16,
+   "metabolites": 39,
+   "links": 150
+  },
+  {
+   "name": "Exchange/demand reactions",
+   "slug": "exchange-demand-reactions",
+   "genes": 0,
+   "reactions": 1658,
+   "metabolites": 1658,
+   "links": 1658
+  },
+  {
+   "name": "Fatty acid activation (cytosolic)",
+   "slug": "fatty-acid-activation-cytosolic",
+   "genes": 16,
+   "reactions": 67,
+   "metabolites": 137,
+   "links": 924
+  },
+  {
+   "name": "Fatty acid activation (endoplasmic reticular)",
+   "slug": "fatty-acid-activation-endoplasmic-reticular",
+   "genes": 10,
+   "reactions": 55,
+   "metabolites": 114,
+   "links": 772
+  },
+  {
+   "name": "Fatty acid biosynthesis",
+   "slug": "fatty-acid-biosynthesis",
+   "genes": 26,
+   "reactions": 75,
+   "metabolites": 133,
+   "links": 569
+  },
+  {
+   "name": "Fatty acid biosynthesis (even-chain)",
+   "slug": "fatty-acid-biosynthesis-even-chain",
+   "genes": 6,
+   "reactions": 32,
+   "metabolites": 53,
+   "links": 196
+  },
+  {
+   "name": "Fatty acid biosynthesis (odd-chain)",
+   "slug": "fatty-acid-biosynthesis-odd-chain",
+   "genes": 1,
+   "reactions": 29,
+   "metabolites": 38,
+   "links": 166
+  },
+  {
+   "name": "Fatty acid biosynthesis (unsaturated)",
+   "slug": "fatty-acid-biosynthesis-unsaturated",
+   "genes": 15,
+   "reactions": 32,
+   "metabolites": 43,
+   "links": 272
+  },
+  {
+   "name": "Fatty acid degradation",
+   "slug": "fatty-acid-degradation",
+   "genes": 1,
+   "reactions": 1,
+   "metabolites": 5,
+   "links": 6
+  },
+  {
+   "name": "Fatty acid desaturation (even-chain)",
+   "slug": "fatty-acid-desaturation-even-chain",
+   "genes": 5,
+   "reactions": 12,
+   "metabolites": 21,
+   "links": 110
+  },
+  {
+   "name": "Fatty acid desaturation (odd-chain)",
+   "slug": "fatty-acid-desaturation-odd-chain",
+   "genes": 2,
+   "reactions": 2,
+   "metabolites": 8,
+   "links": 18
+  },
+  {
+   "name": "Fatty acid elongation (even-chain)",
+   "slug": "fatty-acid-elongation-even-chain",
+   "genes": 15,
+   "reactions": 20,
+   "metabolites": 28,
+   "links": 170
+  },
+  {
+   "name": "Fatty acid elongation (odd-chain)",
+   "slug": "fatty-acid-elongation-odd-chain",
+   "genes": 15,
+   "reactions": 12,
+   "metabolites": 20,
+   "links": 101
+  },
+  {
+   "name": "Fatty acid metabolism",
+   "slug": "fatty-acid-metabolism",
+   "genes": 7,
+   "reactions": 51,
+   "metabolites": 114,
+   "links": 318
+  },
+  {
+   "name": "Fatty acid oxidation",
+   "slug": "fatty-acid-oxidation",
+   "genes": 70,
+   "reactions": 439,
+   "metabolites": 583,
+   "links": 3224
+  },
+  {
+   "name": "Folate metabolism",
+   "slug": "folate-metabolism",
+   "genes": 18,
+   "reactions": 64,
+   "metabolites": 97,
+   "links": 409
+  },
+  {
+   "name": "Formation and hydrolysis of cholesterol esters",
+   "slug": "formation-and-hydrolysis-of-cholesterol-esters",
+   "genes": 4,
+   "reactions": 179,
+   "metabolites": 304,
+   "links": 1300
+  },
+  {
+   "name": "Fructose and mannose metabolism",
+   "slug": "fructose-and-mannose-metabolism",
+   "genes": 27,
+   "reactions": 23,
+   "metabolites": 33,
+   "links": 140
+  },
+  {
+   "name": "Galactose metabolism",
+   "slug": "galactose-metabolism",
+   "genes": 23,
+   "reactions": 21,
+   "metabolites": 44,
+   "links": 121
+  },
+  {
+   "name": "Glucocorticoid biosynthesis",
+   "slug": "glucocorticoid-biosynthesis",
+   "genes": 8,
+   "reactions": 11,
+   "metabolites": 36,
+   "links": 92
+  },
+  {
+   "name": "Glutathione metabolism",
+   "slug": "glutathione-metabolism",
+   "genes": 32,
+   "reactions": 17,
+   "metabolites": 36,
+   "links": 153
+  },
+  {
+   "name": "Glycerolipid metabolism",
+   "slug": "glycerolipid-metabolism",
+   "genes": 64,
+   "reactions": 76,
+   "metabolites": 172,
+   "links": 653
+  },
+  {
+   "name": "Glycerophospholipid metabolism",
+   "slug": "glycerophospholipid-metabolism",
+   "genes": 107,
+   "reactions": 102,
+   "metabolites": 177,
+   "links": 780
+  },
+  {
+   "name": "Glycine, serine and threonine metabolism",
+   "slug": "glycine-serine-and-threonine-metabolism",
+   "genes": 56,
+   "reactions": 63,
+   "metabolites": 134,
+   "links": 390
+  },
+  {
+   "name": "Glycolysis / Gluconeogenesis",
+   "slug": "glycolysis-gluconeogenesis",
+   "genes": 70,
+   "reactions": 44,
+   "metabolites": 84,
+   "links": 290
+  },
+  {
+   "name": "Glycosphingolipid biosynthesis-ganglio series",
+   "slug": "glycosphingolipid-biosynthesis-ganglio-series",
+   "genes": 25,
+   "reactions": 37,
+   "metabolites": 34,
+   "links": 248
+  },
+  {
+   "name": "Glycosphingolipid biosynthesis-globo series",
+   "slug": "glycosphingolipid-biosynthesis-globo-series",
+   "genes": 14,
+   "reactions": 11,
+   "metabolites": 24,
+   "links": 65
+  },
+  {
+   "name": "Glycosphingolipid biosynthesis-lacto and neolacto series",
+   "slug": "glycosphingolipid-biosynthesis-lacto-and-neolacto-series",
+   "genes": 27,
+   "reactions": 51,
+   "metabolites": 60,
+   "links": 373
+  },
+  {
+   "name": "Glycosphingolipid metabolism",
+   "slug": "glycosphingolipid-metabolism",
+   "genes": 58,
+   "reactions": 25,
+   "metabolites": 69,
+   "links": 231
+  },
+  {
+   "name": "Glycosylphosphatidylinositol (GPI)-anchor biosynthesis",
+   "slug": "glycosylphosphatidylinositol-gpi-anchor-biosynthesis",
+   "genes": 27,
+   "reactions": 31,
+   "metabolites": 53,
+   "links": 206
+  },
+  {
+   "name": "Glyoxylate and dicarboxylate metabolism",
+   "slug": "glyoxylate-and-dicarboxylate-metabolism",
+   "genes": 2,
+   "reactions": 1,
+   "metabolites": 3,
+   "links": 5
+  },
+  {
+   "name": "Heme degradation",
+   "slug": "heme-degradation",
+   "genes": 3,
+   "reactions": 3,
+   "metabolites": 17,
+   "links": 20
+  },
+  {
+   "name": "Heparan sulfate degradation",
+   "slug": "heparan-sulfate-degradation",
+   "genes": 13,
+   "reactions": 30,
+   "metabolites": 41,
+   "links": 168
+  },
+  {
+   "name": "Hippurate metabolism",
+   "slug": "hippurate-metabolism",
+   "genes": 0,
+   "reactions": 2,
+   "metabolites": 9,
+   "links": 11
+  },
+  {
+   "name": "Histidine metabolism",
+   "slug": "histidine-metabolism",
+   "genes": 43,
+   "reactions": 20,
+   "metabolites": 47,
+   "links": 166
+  },
+  {
+   "name": "Inositol phosphate metabolism",
+   "slug": "inositol-phosphate-metabolism",
+   "genes": 99,
+   "reactions": 93,
+   "metabolites": 80,
+   "links": 739
+  },
+  {
+   "name": "Insect hormone biosynthesis",
+   "slug": "insect-hormone-biosynthesis",
+   "genes": 1,
+   "reactions": 2,
+   "metabolites": 12,
+   "links": 14
+  },
+  {
+   "name": "Isolated",
+   "slug": "isolated",
+   "genes": 512,
+   "reactions": 157,
+   "metabolites": 371,
+   "links": 1292
+  },
+  {
+   "name": "Keratan sulfate biosynthesis",
+   "slug": "keratan-sulfate-biosynthesis",
+   "genes": 21,
+   "reactions": 59,
+   "metabolites": 70,
+   "links": 546
+  },
+  {
+   "name": "Keratan sulfate degradation",
+   "slug": "keratan-sulfate-degradation",
+   "genes": 13,
+   "reactions": 76,
+   "metabolites": 77,
+   "links": 562
+  },
+  {
+   "name": "Leukotriene metabolism",
+   "slug": "leukotriene-metabolism",
+   "genes": 177,
+   "reactions": 170,
+   "metabolites": 252,
+   "links": 1857
+  },
+  {
+   "name": "Linoleate metabolism",
+   "slug": "linoleate-metabolism",
+   "genes": 61,
+   "reactions": 35,
+   "metabolites": 58,
+   "links": 439
+  },
+  {
+   "name": "Lipoic acid metabolism",
+   "slug": "lipoic-acid-metabolism",
+   "genes": 10,
+   "reactions": 4,
+   "metabolites": 21,
+   "links": 36
+  },
+  {
+   "name": "Lysine metabolism",
+   "slug": "lysine-metabolism",
+   "genes": 49,
+   "reactions": 42,
+   "metabolites": 97,
+   "links": 420
+  },
+  {
+   "name": "Metabolism of other amino acids",
+   "slug": "metabolism-of-other-amino-acids",
+   "genes": 28,
+   "reactions": 23,
+   "metabolites": 72,
+   "links": 172
+  },
+  {
+   "name": "Miscellaneous",
+   "slug": "miscellaneous",
+   "genes": 94,
+   "reactions": 80,
+   "metabolites": 228,
+   "links": 574
+  },
+  {
+   "name": "N-glycan metabolism",
+   "slug": "n-glycan-metabolism",
+   "genes": 69,
+   "reactions": 95,
+   "metabolites": 139,
+   "links": 582
+  },
+  {
+   "name": "Nicotinate and nicotinamide metabolism",
+   "slug": "nicotinate-and-nicotinamide-metabolism",
+   "genes": 46,
+   "reactions": 36,
+   "metabolites": 71,
+   "links": 268
+  },
+  {
+   "name": "Nucleotide metabolism",
+   "slug": "nucleotide-metabolism",
+   "genes": 148,
+   "reactions": 125,
+   "metabolites": 192,
+   "links": 928
+  },
+  {
+   "name": "O-glycan metabolism",
+   "slug": "o-glycan-metabolism",
+   "genes": 31,
+   "reactions": 19,
+   "metabolites": 30,
+   "links": 148
+  },
+  {
+   "name": "Omega-3 fatty acid metabolism",
+   "slug": "omega-3-fatty-acid-metabolism",
+   "genes": 52,
+   "reactions": 74,
+   "metabolites": 116,
+   "links": 508
+  },
+  {
+   "name": "Omega-6 fatty acid metabolism",
+   "slug": "omega-6-fatty-acid-metabolism",
+   "genes": 38,
+   "reactions": 59,
+   "metabolites": 95,
+   "links": 429
+  },
+  {
+   "name": "Oxidative phosphorylation",
+   "slug": "oxidative-phosphorylation",
+   "genes": 107,
+   "reactions": 10,
+   "metabolites": 29,
+   "links": 190
+  },
+  {
+   "name": "Pantothenate and CoA metabolism",
+   "slug": "pantothenate-and-coa-metabolism",
+   "genes": 13,
+   "reactions": 25,
+   "metabolites": 51,
+   "links": 149
+  },
+  {
+   "name": "Pentose Phosphate Pathway",
+   "slug": "pentose-phosphate-pathway",
+   "genes": 0,
+   "reactions": 1,
+   "metabolites": 4,
+   "links": 4
+  },
+  {
+   "name": "Pentose and glucuronate interconversions",
+   "slug": "pentose-and-glucuronate-interconversions",
+   "genes": 10,
+   "reactions": 16,
+   "metabolites": 32,
+   "links": 91
+  },
+  {
+   "name": "Pentose phosphate pathway",
+   "slug": "pentose-phosphate-pathway-2",
+   "genes": 25,
+   "reactions": 25,
+   "metabolites": 46,
+   "links": 136
+  },
+  {
+   "name": "Peptide metabolism",
+   "slug": "peptide-metabolism",
+   "genes": 6,
+   "reactions": 251,
+   "metabolites": 274,
+   "links": 1178
+  },
+  {
+   "name": "Phenylalanine metabolism",
+   "slug": "phenylalanine-metabolism",
+   "genes": 3,
+   "reactions": 6,
+   "metabolites": 27,
+   "links": 35
+  },
+  {
+   "name": "Phenylalanine, tyrosine and tryptophan biosynthesis",
+   "slug": "phenylalanine-tyrosine-and-tryptophan-biosynthesis",
+   "genes": 120,
+   "reactions": 157,
+   "metabolites": 203,
+   "links": 1296
+  },
+  {
+   "name": "Phosphatidylinositol phosphate metabolism",
+   "slug": "phosphatidylinositol-phosphate-metabolism",
+   "genes": 21,
+   "reactions": 20,
+   "metabolites": 58,
+   "links": 127
+  },
+  {
+   "name": "Pool reactions",
+   "slug": "pool-reactions",
+   "genes": 11,
+   "reactions": 48,
+   "metabolites": 518,
+   "links": 2049
+  },
+  {
+   "name": "Porphyrin metabolism",
+   "slug": "porphyrin-metabolism",
+   "genes": 22,
+   "reactions": 28,
+   "metabolites": 64,
+   "links": 149
+  },
+  {
+   "name": "Propanoate metabolism",
+   "slug": "propanoate-metabolism",
+   "genes": 35,
+   "reactions": 25,
+   "metabolites": 61,
+   "links": 173
+  },
+  {
+   "name": "Prostaglandin biosynthesis",
+   "slug": "prostaglandin-biosynthesis",
+   "genes": 48,
+   "reactions": 71,
+   "metabolites": 94,
+   "links": 416
+  },
+  {
+   "name": "Protein assembly",
+   "slug": "protein-assembly",
+   "genes": 13,
+   "reactions": 24,
+   "metabolites": 89,
+   "links": 1066
+  },
+  {
+   "name": "Protein degradation",
+   "slug": "protein-degradation",
+   "genes": 18,
+   "reactions": 35,
+   "metabolites": 109,
+   "links": 1151
+  },
+  {
+   "name": "Protein modification",
+   "slug": "protein-modification",
+   "genes": 8,
+   "reactions": 8,
+   "metabolites": 18,
+   "links": 42
+  },
+  {
+   "name": "Purine metabolism",
+   "slug": "purine-metabolism",
+   "genes": 130,
+   "reactions": 109,
+   "metabolites": 150,
+   "links": 874
+  },
+  {
+   "name": "Pyrimidine metabolism",
+   "slug": "pyrimidine-metabolism",
+   "genes": 63,
+   "reactions": 76,
+   "metabolites": 140,
+   "links": 566
+  },
+  {
+   "name": "Pyruvate metabolism",
+   "slug": "pyruvate-metabolism",
+   "genes": 45,
+   "reactions": 34,
+   "metabolites": 61,
+   "links": 264
+  },
+  {
+   "name": "ROS detoxification",
+   "slug": "ros-detoxification",
+   "genes": 4,
+   "reactions": 10,
+   "metabolites": 30,
+   "links": 43
+  },
+  {
+   "name": "Retinol metabolism",
+   "slug": "retinol-metabolism",
+   "genes": 121,
+   "reactions": 93,
+   "metabolites": 116,
+   "links": 882
+  },
+  {
+   "name": "Riboflavin metabolism",
+   "slug": "riboflavin-metabolism",
+   "genes": 9,
+   "reactions": 7,
+   "metabolites": 20,
+   "links": 43
+  },
+  {
+   "name": "Serotonin and melatonin biosynthesis",
+   "slug": "serotonin-and-melatonin-biosynthesis",
+   "genes": 41,
+   "reactions": 20,
+   "metabolites": 40,
+   "links": 139
+  },
+  {
+   "name": "Sphingolipid metabolism",
+   "slug": "sphingolipid-metabolism",
+   "genes": 118,
+   "reactions": 131,
+   "metabolites": 221,
+   "links": 856
+  },
+  {
+   "name": "Starch and sucrose metabolism",
+   "slug": "starch-and-sucrose-metabolism",
+   "genes": 28,
+   "reactions": 38,
+   "metabolites": 55,
+   "links": 261
+  },
+  {
+   "name": "Steroid metabolism",
+   "slug": "steroid-metabolism",
+   "genes": 62,
+   "reactions": 92,
+   "metabolites": 148,
+   "links": 726
+  },
+  {
+   "name": "Sulfur metabolism",
+   "slug": "sulfur-metabolism",
+   "genes": 24,
+   "reactions": 14,
+   "metabolites": 47,
+   "links": 102
+  },
+  {
+   "name": "Terpenoid backbone biosynthesis",
+   "slug": "terpenoid-backbone-biosynthesis",
+   "genes": 15,
+   "reactions": 18,
+   "metabolites": 52,
+   "links": 106
+  },
+  {
+   "name": "Thiamine metabolism",
+   "slug": "thiamine-metabolism",
+   "genes": 6,
+   "reactions": 7,
+   "metabolites": 18,
+   "links": 41
+  },
+  {
+   "name": "Toluene degradation",
+   "slug": "toluene-degradation",
+   "genes": 1,
+   "reactions": 2,
+   "metabolites": 8,
+   "links": 14
+  },
+  {
+   "name": "Transport reactions",
+   "slug": "transport-reactions",
+   "genes": 516,
+   "reactions": 4108,
+   "metabolites": 4083,
+   "links": 20185
+  },
+  {
+   "name": "Triacylglycerol synthesis",
+   "slug": "triacylglycerol-synthesis",
+   "genes": 0,
+   "reactions": 1,
+   "metabolites": 5,
+   "links": 5
+  },
+  {
+   "name": "Tricarboxylic acid cycle and glyoxylate/dicarboxylate metabolism",
+   "slug": "tricarboxylic-acid-cycle-and-glyoxylate-dicarboxylate-metabolism",
+   "genes": 45,
+   "reactions": 34,
+   "metabolites": 76,
+   "links": 221
+  },
+  {
+   "name": "Tryptophan metabolism",
+   "slug": "tryptophan-metabolism",
+   "genes": 21,
+   "reactions": 17,
+   "metabolites": 44,
+   "links": 103
+  },
+  {
+   "name": "Tyrosine metabolism",
+   "slug": "tyrosine-metabolism",
+   "genes": 50,
+   "reactions": 78,
+   "metabolites": 157,
+   "links": 503
+  },
+  {
+   "name": "Ubiquinone and other terpenoid-quinone biosynthesis",
+   "slug": "ubiquinone-and-other-terpenoid-quinone-biosynthesis",
+   "genes": 1,
+   "reactions": 4,
+   "metabolites": 16,
+   "links": 20
+  },
+  {
+   "name": "Ubiquinone synthesis",
+   "slug": "ubiquinone-synthesis",
+   "genes": 3,
+   "reactions": 10,
+   "metabolites": 27,
+   "links": 58
+  },
+  {
+   "name": "Urea cycle",
+   "slug": "urea-cycle",
+   "genes": 0,
+   "reactions": 1,
+   "metabolites": 3,
+   "links": 3
+  },
+  {
+   "name": "Valine, leucine, and isoleucine metabolism",
+   "slug": "valine-leucine-and-isoleucine-metabolism",
+   "genes": 59,
+   "reactions": 53,
+   "metabolites": 95,
+   "links": 345
+  },
+  {
+   "name": "Vitamin A metabolism",
+   "slug": "vitamin-a-metabolism",
+   "genes": 8,
+   "reactions": 10,
+   "metabolites": 27,
+   "links": 54
+  },
+  {
+   "name": "Vitamin B12 metabolism",
+   "slug": "vitamin-b12-metabolism",
+   "genes": 2,
+   "reactions": 4,
+   "metabolites": 17,
+   "links": 24
+  },
+  {
+   "name": "Vitamin B2 metabolism",
+   "slug": "vitamin-b2-metabolism",
+   "genes": 2,
+   "reactions": 2,
+   "metabolites": 10,
+   "links": 12
+  },
+  {
+   "name": "Vitamin B6 metabolism",
+   "slug": "vitamin-b6-metabolism",
+   "genes": 7,
+   "reactions": 11,
+   "metabolites": 15,
+   "links": 70
+  },
+  {
+   "name": "Vitamin C metabolism",
+   "slug": "vitamin-c-metabolism",
+   "genes": 3,
+   "reactions": 2,
+   "metabolites": 9,
+   "links": 12
+  },
+  {
+   "name": "Vitamin D metabolism",
+   "slug": "vitamin-d-metabolism",
+   "genes": 10,
+   "reactions": 34,
+   "metabolites": 51,
+   "links": 258
+  },
+  {
+   "name": "Vitamin E metabolism",
+   "slug": "vitamin-e-metabolism",
+   "genes": 54,
+   "reactions": 51,
+   "metabolites": 97,
+   "links": 847
+  },
+  {
+   "name": "Xenobiotics metabolism",
+   "slug": "xenobiotics-metabolism",
+   "genes": 105,
+   "reactions": 158,
+   "metabolites": 212,
+   "links": 1617
+  },
+  {
+   "name": "octane oxidation",
+   "slug": "octane-oxidation",
+   "genes": 3,
+   "reactions": 2,
+   "metabolites": 12,
+   "links": 16
+  }
+ ]
+}

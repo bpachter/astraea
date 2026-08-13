@@ -188,6 +188,33 @@ introductory lecture series), with self-checks and jump links into the graph.
 Edge routing (anchor bucketing + cubic Béziers), the blueprint visual system, and
 light/dark theming follow the design handoff this app was ported from.
 
+### The layered-omics atlas (`ATLAS` view)
+
+The third view renders the classic omics pyramid — genome below, metabolome on
+top — as a navigable 3D structure, one metabolic subsystem at a time, built from
+**Human-GEM** (SysBioChalmers' genome-scale metabolic model of *Homo sapiens*,
+CC-BY-4.0): 2,848 genes connect through 12,931 reactions to 8,461 metabolites
+across 147 subsystems. Genes rise through the reactions they enable (Human-GEM
+encodes the proteome implicitly, as gene–reaction rules — the METHODS panel
+says so out loud) to the metabolites those reactions transform. Every node
+carries its formal identifiers (Ensembl, UniProt, EC, HMDB, KEGG, ChEBI) with
+outbound links; every reaction dossier renders its full text equation with
+stoichiometry; every node is keyboard-reachable through a browse list, not just
+by clicking the WebGL canvas. Currency metabolites (ATP, H₂O, NAD⁺…) are hidden
+by default and disclosed, following standard practice in metabolic network
+visualization.
+
+The data is derived, versioned, and reproducible:
+
+```bash
+python recon/scripts/build_atlas.py --src /path/to/human-gem-cache
+```
+
+The script downloads the pinned sources, parses the model with a fail-loud line
+parser, cross-checks counts, and emits `recon/public/atlas/`. Citation:
+Robinson, J.L. et al., *An atlas of human metabolism*, Sci. Signal. 13, eaaz1482
+(2020).
+
 ## Relationship to Thessa
 
 Thessa's graph (~11,000 organizations, ~22K typed edges over SEC filings and 78K+ federal

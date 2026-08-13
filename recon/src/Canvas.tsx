@@ -176,9 +176,11 @@ export function Canvas({
                     className="mr-node"
                     onClick={() => onSelect(node.id)}
                     style={{
-                      borderColor,
-                      borderStyle: node.confidence === "INF" ? "dashed" : "solid",
-                      borderLeft: `3px solid ${classColor}`,
+                      borderWidth: "1px 1px 1px 3px",
+                      borderColor: `${borderColor} ${borderColor} ${borderColor} ${classColor}`,
+                      borderStyle: `${node.confidence === "INF" ? "dashed" : "solid"} `
+                        .repeat(3)
+                        .concat("solid"),
                       background: isSelected ? "var(--mr-tint)" : "var(--color-bg)",
                       opacity: dimOthers && !related ? 0.38 : 1,
                       ["--mark-color" as string]: isSelected
