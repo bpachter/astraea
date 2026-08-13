@@ -48,6 +48,23 @@ autoscaling, and per-service health checks out of the box.
 | Route 53 hosted zone (optional custom domain) | $0.50 |
 | **total** | **~$6–9** |
 
+## Status
+
+Phase 1 (containerize): **portal image built and smoke-verified** — gunicorn up,
+WhiteNoise serving admin static, baked demo db carrying exactly the 7 seeded
+proposals + 3 demo merges and zero live-KG rows (the repo-root `.dockerignore`
+excludes any local database by design). The gate Dockerfile is written but its
+image is **unverified**: `mcr.microsoft.com` was unreachable from the build
+machine at the time (registry EOF on every pull over ~10 minutes; Docker Hub
+fine). When MCR is reachable again, the full loop verifies with one command:
+
+```bash
+docker compose up --build
+```
+
+— then log into http://localhost:8642 (demo / themis-demo) and run the
+"Run reconciliation gate (.NET)" admin action against the seeded proposals.
+
 ## Phases
 
 1. **Containerize** — `gate/Dockerfile` (multi-stage: sdk → aspnet runtime,

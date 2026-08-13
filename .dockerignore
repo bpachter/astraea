@@ -1,0 +1,12 @@
+.git
+**/node_modules
+**/bin
+**/obj
+**/__pycache__
+**/*.pyc
+# Never bake a development database into an image — the local one may hold
+# imported live-KG queues; images seed a fresh demo db at build time.
+**/db.sqlite3
+portal/staticfiles
+recon/dist
+.vs

@@ -47,7 +47,16 @@ API, a hard error message in the admin).
 
 ## Run it
 
-Two processes, no shared infrastructure — the portal reaches the gate over HTTP.
+The fastest path is containers — the same images the AWS deployment ships
+(see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)); the portal bakes a fresh seeded
+demo database at build time (login `demo` / `themis-demo`):
+
+```bash
+docker compose up --build
+```
+
+Or natively — two processes, no shared infrastructure; the portal reaches the
+gate over HTTP.
 
 **Gate** (needs .NET 8 SDK):
 
