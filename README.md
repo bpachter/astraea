@@ -167,6 +167,27 @@ throughput, never for truth.
 - **Money travels in whole units.** `revenue_usd` is whole dollars; a scale riding in a
   column is a unit bug one layer down where nothing can catch it.
 
+## The React third: `recon/`
+
+`recon/` is a Vite + React 18 + TypeScript viewer for **architecture recon
+graphs** — a generic `lanes → nodes → typed edges` contract (`graph.json`) for
+reconstructing any system's architecture with evidence-graded nodes (each carries
+its sources, stakes, and the questions to ask about it). Click a node and its
+edges light up; a sticky dossier shows the evidence; every claim wears a
+confidence chip. The rendering layer knows nothing about any company — swap
+`public/graphs/*.json` to recon a different system.
+
+```bash
+npm --prefix recon install && npm --prefix recon run dev
+```
+
+The public sample instance is a self-portrait: Themis's own governance loop drawn
+in its own contract. A second view, **PRIMER**, is a hand-holding walkthrough of
+metabolomics from foundations to implications (distilled from the TMIC
+introductory lecture series), with self-checks and jump links into the graph.
+Edge routing (anchor bucketing + cubic Béziers), the blueprint visual system, and
+light/dark theming follow the design handoff this app was ported from.
+
 ## Relationship to Thessa
 
 Thessa's graph (~11,000 organizations, ~22K typed edges over SEC filings and 78K+ federal

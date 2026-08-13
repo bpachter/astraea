@@ -4,6 +4,12 @@ obj/
 *.user
 .vs/
 
+# Node / recon viewer
+node_modules/
+recon/dist/
+# The Metabolon graph instance is interview prep, not portfolio content.
+recon/public/graphs/metabolon.json
+
 # Python
 __pycache__/
 *.pyc

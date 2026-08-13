@@ -1,0 +1,251 @@
+{
+  "meta": {
+    "title": "Themis Architecture Recon",
+    "purpose": "The sample instance of the recon viewer: Themis's own governed curation plane, drawn in the same lanes → nodes → typed edges contract. Swap in any graph.json to recon a different system.",
+    "confidenceLegend": {
+      "JD": "In the repo — read the code",
+      "PUB": "Verified live against real data",
+      "INF": "Design intent — not yet built"
+    },
+    "disclaimer": "Self-portrait of the Themis repo; the sample data that ships publicly."
+  },
+  "themes": {
+    "light": {
+      "bg": "#f2f2f3",
+      "surface": "#e9e9ea",
+      "text": "#1d1f20",
+      "divider": "rgba(29,31,32,0.16)",
+      "accentText": "#3c6285",
+      "accentDeep": "#2c455d",
+      "tint": "#e6eef7",
+      "muted": "#6c6f74",
+      "mutedLine": "#98989b"
+    },
+    "dark": {
+      "bg": "#14171a",
+      "surface": "#1c2126",
+      "text": "#e6e9ec",
+      "divider": "rgba(230,233,236,0.20)",
+      "accentText": "#b5d9fd",
+      "accentDeep": "#d6ebff",
+      "tint": "#1d2d3d",
+      "muted": "#9aa0a7",
+      "mutedLine": "#6f767e"
+    }
+  },
+  "nodeClasses": [
+    { "key": "Actor", "short": "ACTOR", "glyph": "○", "colorLight": "#45484d", "colorDark": "#b9bec5", "definition": "External party exchanging data or judgment with the system", "memberCount": 2 },
+    { "key": "Physical process", "short": "PHYSICAL", "glyph": "▷", "colorLight": "#8a4b32", "colorDark": "#e2a184", "definition": "Work that happens outside software", "memberCount": 0 },
+    { "key": "System", "short": "SYSTEM", "glyph": "▢", "colorLight": "#3c6285", "colorDark": "#8fbde8", "definition": "Software Themis builds and operates", "memberCount": 5 },
+    { "key": "Data asset", "short": "DATA ASSET", "glyph": "◆", "colorLight": "#56479b", "colorDark": "#b3a4ee", "definition": "A dataset whose value is its trustworthiness", "memberCount": 3 },
+    { "key": "Data store", "short": "DATA STORE", "glyph": "▤", "colorLight": "#1c6a6a", "colorDark": "#79cac2", "definition": "Where the facts physically live", "memberCount": 1 },
+    { "key": "Practice", "short": "PRACTICE", "glyph": "✚", "colorLight": "#5b6a2c", "colorDark": "#b7c47c", "definition": "A discipline enforced in code, not in memory", "memberCount": 1 },
+    { "key": "Constraint", "short": "CONSTRAINT", "glyph": "⌗", "colorLight": "#8a3b46", "colorDark": "#eb9aa5", "definition": "A rule the whole system bends around", "memberCount": 1 }
+  ],
+  "edgeFamilies": [
+    { "key": "material", "label": "MATERIAL", "note": "facts moving", "colorLight": "#8a4b32", "colorDark": "#e2a184", "strokeDasharray": null, "strokeWidth": 1.7, "verbs": ["FLOWS_TO", "GENERATES"] },
+    { "key": "data", "label": "DATA", "note": "reads + writes", "colorLight": "#3c6285", "colorDark": "#8fbde8", "strokeDasharray": null, "strokeWidth": 1.15, "verbs": ["STORES_IN", "FEEDS", "MAPS_TO"] },
+    { "key": "delivery", "label": "DELIVERY", "note": "reaching people", "colorLight": "#86651c", "colorDark": "#d9b25e", "strokeDasharray": "7 3", "strokeWidth": 1.15, "verbs": ["SERVES", "DELIVERS_TO"] },
+    { "key": "control", "label": "CONTROL", "note": "who says no", "colorLight": "#5c6066", "colorDark": "#a8adb4", "strokeDasharray": "3 3", "strokeWidth": 1, "verbs": ["GOVERNS", "TRACKS"] },
+    { "key": "capability", "label": "CAPABILITY", "note": "what makes it possible", "colorLight": "#56479b", "colorDark": "#b3a4ee", "strokeDasharray": "1.5 3.5", "strokeWidth": 1.6, "verbs": ["POWERS", "GROUNDS", "ACCELERATES"] }
+  ],
+  "relationTypes": [
+    { "verb": "FLOWS_TO", "meaning": "Facts move downstream for judgment", "example": "Draft edges flow to the gate", "family": "material" },
+    { "verb": "GENERATES", "meaning": "Produces a new artifact", "example": "The flywheel generates proposals", "family": "material" },
+    { "verb": "FEEDS", "meaning": "Supplies data another system consumes", "example": "EDGAR feeds the flywheel", "family": "data" },
+    { "verb": "MAPS_TO", "meaning": "Derives a structured view of", "example": "The census maps the graph's schema", "family": "data" },
+    { "verb": "SERVES", "meaning": "Puts results in front of a person", "example": "The portal serves the reviewer", "family": "delivery" },
+    { "verb": "DELIVERS_TO", "meaning": "Hands an artifact to its consumer", "example": "Decisions deliver to the graph's sweeps", "family": "delivery" },
+    { "verb": "GOVERNS", "meaning": "Holds refusal power over", "example": "The truth constraint governs approval", "family": "control" },
+    { "verb": "POWERS", "meaning": "Is the capability something runs on", "example": "The graph powers this viewer", "family": "capability" },
+    { "verb": "GROUNDS", "meaning": "Anchors judgment in evidence", "example": "Substance stats ground the gate", "family": "capability" },
+    { "verb": "AUDITS", "meaning": "Independent after-the-fact review", "example": "Citation checks audit the flywheel", "family": null }
+  ],
+  "lanes": [
+    { "index": 0, "number": "01", "title": "SOURCES", "note": "public filings + awards" },
+    { "index": 1, "number": "02", "title": "PROPOSAL", "note": "AI drafts, never publishes" },
+    { "index": 2, "number": "03", "title": "VERIFICATION", "note": "deterministic law" },
+    { "index": 3, "number": "04", "title": "GOVERNANCE", "note": "humans own publication" },
+    { "index": 4, "number": "05", "title": "THE GRAPH", "note": "what survives the gates" },
+    { "index": 5, "number": "06", "title": "DELIVERY", "note": "surfaces + exports" }
+  ],
+  "nodes": [
+    {
+      "id": "sources", "lane": 0, "laneTitle": "SOURCES", "class": "Actor", "confidence": "JD",
+      "label": "SEC EDGAR + USAspending", "subtitle": "Public filings and 78K+ federal awards — every number has a provenance trail",
+      "evidence": [
+        { "source": "JD", "text": "Seed data carries EDGAR provenance links; federal contracts are the substance signal." }
+      ],
+      "whyItMatters": "Provenance beats name shape: a node is judged by where its facts came from, and these are the sources.",
+      "questions": ["Which source would you add next, and what new failure modes does it import?"],
+      "undrawnRelation": null
+    },
+    {
+      "id": "flywheel", "lane": 1, "laneTitle": "PROPOSAL", "class": "System", "confidence": "PUB",
+      "label": "Extraction flywheel", "subtitle": "LLM agents propose typed facts; throughput lives here, truth does not",
+      "evidence": [
+        { "source": "WEB", "text": "1,083 pending supply-edge drafts imported from the live queue, contributor 'mithrandir'." }
+      ],
+      "whyItMatters": "The division of labor: agents draft and cross-examine, deterministic code verifies, humans own publication.",
+      "questions": ["What is the flywheel's precision at the gate, per failure mode, per month?"],
+      "undrawnRelation": null
+    },
+    {
+      "id": "citation", "lane": 1, "laneTitle": "PROPOSAL", "class": "System", "confidence": "JD",
+      "label": "Citation-check agents", "subtitle": "Independent adjudicators that see only the proposal and its source",
+      "evidence": [
+        { "source": "JD", "text": "manage.py citation_check regenerates summaries live when an API key is set; seeds ship precomputed." }
+      ],
+      "whyItMatters": "Independence is the point: the checker never sees the extractor's reasoning, so agreement means something.",
+      "questions": ["Should citation checks gate imports, or stay advisory to the human?"],
+      "undrawnRelation": "AUDITS the flywheel — drawn as advice, not as an edge."
+    },
+    {
+      "id": "drafts", "lane": 1, "laneTitle": "PROPOSAL", "class": "Data asset", "confidence": "PUB",
+      "label": "Draft queues", "subtitle": "Edges, retypes, merges — pending, named, and none of it published",
+      "evidence": [
+        { "source": "WEB", "text": "EdgeProposal / TypeProposal / MergeProposal rows imported read-only from the live graph." }
+      ],
+      "whyItMatters": "Absence is honest: a draft is a claim awaiting judgment, structurally unable to masquerade as a fact.",
+      "questions": ["What's the queue's aging profile — does anything rot un-adjudicated?"],
+      "undrawnRelation": null
+    },
+    {
+      "id": "gate", "lane": 2, "laneTitle": "VERIFICATION", "class": "System", "confidence": "PUB",
+      "label": "Themis.Gate (.NET 8)", "subtitle": "Reconciliation + ontology law; verdicts are named, never lumped",
+      "evidence": [
+        { "source": "WEB", "text": "First live run: 1,083 edges pass; 14 of 20 retypes refused as substance_demotion (~$10.9B protected)." },
+        { "source": "JD", "text": "22 xUnit tests; endpoints /reconcile, /validate-edge, /validate-merge, /validate-retype." }
+      ],
+      "whyItMatters": "Deterministic validation wants a compiler: typed law that refuses provable errors and names each refusal.",
+      "questions": ["Which rule earns the next slot — stale references, or unit-scale checks?"],
+      "undrawnRelation": null
+    },
+    {
+      "id": "law", "lane": 2, "laneTitle": "VERIFICATION", "class": "Practice", "confidence": "JD",
+      "label": "Named failure modes", "subtitle": "undetected_rollup, bare_name_merge, substance_demotion…",
+      "evidence": [
+        { "source": "JD", "text": "Every gate verdict is a named mode with a definition; 'failed' is not a verdict." }
+      ],
+      "whyItMatters": "A named failure can be triaged, counted, and argued with; an unnamed one is just a shrug.",
+      "questions": ["Which failure mode fires most in production, and is that a bug in the data or the rule?"],
+      "undrawnRelation": null
+    },
+    {
+      "id": "portal", "lane": 3, "laneTitle": "GOVERNANCE", "class": "System", "confidence": "PUB",
+      "label": "Adjudication portal (Django 5)", "subtitle": "Review queues with refusal built into the approve button",
+      "evidence": [
+        { "source": "WEB", "text": "Approving an unreconciled proposal returns a hard refusal in the admin and HTTP 409 on the API." }
+      ],
+      "whyItMatters": "Human-in-the-loop curation is a CRUD-and-permissions problem; Django's admin is the best such machine ever shipped.",
+      "questions": ["What does reviewer throughput look like, and where does the UI waste their judgment?"],
+      "undrawnRelation": null
+    },
+    {
+      "id": "reviewer", "lane": 3, "laneTitle": "GOVERNANCE", "class": "Actor", "confidence": "JD",
+      "label": "The human curator", "subtitle": "Owns publication; judges what the gate cannot prove",
+      "evidence": [
+        { "source": "JD", "text": "The gate is a floor, not a verdict: contract-less judgment calls (The MathWorks) route to a person." }
+      ],
+      "whyItMatters": "AI is load-bearing for throughput, never for truth — someone accountable clicks approve.",
+      "questions": ["What evidence would let a reviewer overrule a gate refusal, if anything?"],
+      "undrawnRelation": null
+    },
+    {
+      "id": "truth", "lane": 3, "laneTitle": "GOVERNANCE", "class": "Constraint", "confidence": "JD",
+      "label": "A wrong number is worse than no number", "subtitle": "Nothing publishes unless it reconciles",
+      "evidence": [
+        { "source": "JD", "text": "The repo's founding rule: absence is honest; a plausible wrong figure is undetectable downstream." }
+      ],
+      "whyItMatters": "Every architectural choice above bends around this one constraint; remove it and the system is just plumbing.",
+      "questions": ["Where would you accept a confidence-weighted publish, if anywhere?"],
+      "undrawnRelation": null
+    },
+    {
+      "id": "kg", "lane": 4, "laneTitle": "THE GRAPH", "class": "Data store", "confidence": "PUB",
+      "label": "The knowledge graph", "subtitle": "space_kg.db — ~34K organizations, typed edges, opened read-only here",
+      "evidence": [
+        { "source": "WEB", "text": "Connector opens SQLite in mode=ro; substance is counted across the full NODE_REF_COLS mirror." }
+      ],
+      "whyItMatters": "Themis never writes it: decisions export as a JSON log for the graph's own dry-run-by-default sweeps.",
+      "questions": ["When does the decisions log become a two-way sync, and what gates that?"],
+      "undrawnRelation": null
+    },
+    {
+      "id": "census", "lane": 4, "laneTitle": "THE GRAPH", "class": "Data asset", "confidence": "PUB",
+      "label": "Ontology census", "subtitle": "Node types, relation types, and ref-columns enumerated from the schema",
+      "evidence": [
+        { "source": "WEB", "text": "14 node types and 10 relation types captured live, with per-table reference columns." }
+      ],
+      "whyItMatters": "Hand-written schema lists drift — the census is enumerated from sqlite_master because drift once cost $134.7B in miscounted orphans.",
+      "questions": ["Should the census diff itself between imports and flag schema drift loudly?"],
+      "undrawnRelation": null
+    },
+    {
+      "id": "substance", "lane": 4, "laneTitle": "THE GRAPH", "class": "Data asset", "confidence": "PUB",
+      "label": "Substance stats", "subtitle": "Live edges + federal contracts + identity bridges, per node",
+      "evidence": [
+        { "source": "WEB", "text": "The signal that refused 14 demotions: The Aerospace Corporation holds 213 contracts ($9.1B)." }
+      ],
+      "whyItMatters": "Provenance beats name shape, operationalized: nodes are judged by what they hold, not how they read.",
+      "questions": ["What belongs in substance next — news mentions, ownership filings, or nothing?"],
+      "undrawnRelation": null
+    },
+    {
+      "id": "recon", "lane": 5, "laneTitle": "DELIVERY", "class": "System", "confidence": "JD",
+      "label": "This viewer", "subtitle": "React 18 — lanes, typed edges, dossiers; the graph.json contract is generic",
+      "evidence": [
+        { "source": "JD", "text": "You are looking at the sample instance; pass ?graph=<name> to load another." }
+      ],
+      "whyItMatters": "The rendering layer knows nothing about any company — the contract is the product.",
+      "questions": ["What second instance earns the build — a customer-facing one, or an internal architecture map?"],
+      "undrawnRelation": null
+    }
+  ],
+  "edges": [
+    { "from": "sources", "to": "flywheel", "verb": "FEEDS", "family": "data", "fromLabel": "SEC EDGAR + USAspending", "toLabel": "Extraction flywheel" },
+    { "from": "flywheel", "to": "drafts", "verb": "GENERATES", "family": "material", "fromLabel": "Extraction flywheel", "toLabel": "Draft queues" },
+    { "from": "citation", "to": "reviewer", "verb": "ACCELERATES", "family": "capability", "fromLabel": "Citation-check agents", "toLabel": "The human curator" },
+    { "from": "drafts", "to": "gate", "verb": "FLOWS_TO", "family": "material", "fromLabel": "Draft queues", "toLabel": "Themis.Gate (.NET 8)" },
+    { "from": "law", "to": "gate", "verb": "GOVERNS", "family": "control", "fromLabel": "Named failure modes", "toLabel": "Themis.Gate (.NET 8)" },
+    { "from": "gate", "to": "portal", "verb": "FEEDS", "family": "data", "fromLabel": "Themis.Gate (.NET 8)", "toLabel": "Adjudication portal (Django 5)" },
+    { "from": "portal", "to": "reviewer", "verb": "SERVES", "family": "delivery", "fromLabel": "Adjudication portal (Django 5)", "toLabel": "The human curator" },
+    { "from": "truth", "to": "portal", "verb": "GOVERNS", "family": "control", "fromLabel": "A wrong number is worse than no number", "toLabel": "Adjudication portal (Django 5)" },
+    { "from": "reviewer", "to": "kg", "verb": "DELIVERS_TO", "family": "delivery", "fromLabel": "The human curator", "toLabel": "The knowledge graph" },
+    { "from": "kg", "to": "census", "verb": "MAPS_TO", "family": "data", "fromLabel": "The knowledge graph", "toLabel": "Ontology census" },
+    { "from": "kg", "to": "substance", "verb": "MAPS_TO", "family": "data", "fromLabel": "The knowledge graph", "toLabel": "Substance stats" },
+    { "from": "substance", "to": "gate", "verb": "GROUNDS", "family": "capability", "fromLabel": "Substance stats", "toLabel": "Themis.Gate (.NET 8)" },
+    { "from": "kg", "to": "recon", "verb": "POWERS", "family": "capability", "fromLabel": "The knowledge graph", "toLabel": "This viewer" },
+    { "from": "recon", "to": "reviewer", "verb": "SERVES", "family": "delivery", "fromLabel": "This viewer", "toLabel": "The human curator" }
+  ],
+  "operatingThesis": [
+    {
+      "number": "01", "node": "gate", "title": "Truth is a service with an API",
+      "body": "The reconciliation and identity rules aren't documentation — they're a typed service other systems must call. A rule you can't invoke is a rule that erodes.",
+      "sayItAs": "Say it as: the CLAUDE.md rulebook, compiled."
+    },
+    {
+      "number": "02", "node": "reviewer", "title": "AI proposes, humans dispose",
+      "body": "Agents generate throughput no human team could match, and exactly zero of it publishes without a deterministic verdict and a human click.",
+      "sayItAs": "Say it as: load-bearing for throughput, never for truth."
+    },
+    {
+      "number": "03", "node": "substance", "title": "Judge nodes by what they hold",
+      "body": "Name-shape heuristics wanted to demote The Aerospace Corporation. Substance stats — contracts, edges, identity bridges — refused, fourteen times in one run.",
+      "sayItAs": "Say it as: provenance beats name shape, in production."
+    },
+    {
+      "number": "04", "node": "kg", "title": "Read-only is a feature",
+      "body": "Themis holds no write path to the graph. Decisions leave as a JSON log for governed, reversible sweeps — the blast radius of a bad day is a file.",
+      "sayItAs": "Say it as: the apply step is someone else's dry run."
+    }
+  ],
+  "shortlistQuestions": [
+    { "n": 1, "node": "gate", "nodeLabel": "Themis.Gate", "question": "Which ontology rule should earn the next slot in the gate, and what real incident justifies it?" },
+    { "n": 2, "node": "drafts", "nodeLabel": "Draft queues", "question": "What is the aging profile of the pending queues — does anything rot un-adjudicated?" },
+    { "n": 3, "node": "reviewer", "nodeLabel": "The human curator", "question": "What evidence, if any, should let a reviewer overrule a gate refusal?" },
+    { "n": 4, "node": "kg", "nodeLabel": "The knowledge graph", "question": "When does the decisions log become a two-way sync, and what has to be true first?" },
+    { "n": 5, "node": "citation", "nodeLabel": "Citation-check agents", "question": "Should independent citation checks gate imports, or stay advisory?" },
+    { "n": 6, "node": "recon", "nodeLabel": "This viewer", "question": "What second graph instance earns the build?" }
+  ]
+}
