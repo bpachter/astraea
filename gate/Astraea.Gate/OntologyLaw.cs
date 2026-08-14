@@ -1,4 +1,4 @@
-namespace Themis.Gate;
+namespace Astraea.Gate;
 
 /// <summary>
 /// What a node actually holds, counted across every referencing table — never

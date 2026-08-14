@@ -79,7 +79,7 @@ class AdjudicationApiTests(TestCase):
     def test_gate_unreachable_is_a_named_error_not_a_silent_fallback(self):
         # No gate is running on this port; the client must surface that loudly.
         proposal = make_proposal()
-        with self.settings(THEMIS_GATE_URL="http://localhost:59999"):
+        with self.settings(ASTRAEA_GATE_URL="http://localhost:59999"):
             response = self.client.post(f"/api/proposals/{proposal.pk}/gate/")
         self.assertEqual(response.status_code, 502)
         self.assertIn("unreachable", response.json()["error"])

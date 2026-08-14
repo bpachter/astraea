@@ -1,6 +1,6 @@
 """Read-only connector to a live Thessa knowledge graph.
 
-Themis NEVER writes to the graph. Connections are opened with SQLite's
+Astraea NEVER writes to the graph. Connections are opened with SQLite's
 read-only URI mode, decisions leave through `manage.py export_decisions` as a
 JSON log, and the apply step belongs to the graph's own governed sweeps.
 
@@ -72,7 +72,7 @@ def open_kg(path=None):
     if not os.path.exists(path):
         raise KgUnavailable(
             f"No knowledge graph at {path}. Set THESSA_KG_DB to a live graph, "
-            "or stay on the seeded public demo — Themis works without one."
+            "or stay on the seeded public demo — Astraea works without one."
         )
     con = sqlite3.connect(f"file:{path}?mode=ro", uri=True)
     con.row_factory = sqlite3.Row

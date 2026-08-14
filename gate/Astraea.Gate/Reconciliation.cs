@@ -1,4 +1,4 @@
-namespace Themis.Gate;
+namespace Astraea.Gate;
 
 /// <summary>
 /// One extracted revenue row. Kind is "segment" for operating segments and

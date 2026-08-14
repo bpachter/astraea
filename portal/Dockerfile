@@ -1,4 +1,4 @@
-# Themis adjudication portal — Django 5 behind gunicorn, serving its own
+# Astraea adjudication portal — Django 5 behind gunicorn, serving its own
 # static files via WhiteNoise. Build context is the REPO ROOT (the seed data
 # lives at data/seed): docker build -f portal/Dockerfile .
 #
@@ -18,14 +18,14 @@ WORKDIR /app/portal
 
 ENV DJANGO_DEBUG=0 \
     DJANGO_ALLOWED_HOSTS=* \
-    THEMIS_GATE_URL=http://localhost:8080
-# demo/themis-demo is a PUBLIC demo credential by design: it guards only the
+    ASTRAEA_GATE_URL=http://localhost:8080
+# demo/astraea-demo is a PUBLIC demo credential by design: it guards only the
 # baked, seeded, reset-on-redeploy demo database and is documented in README.
 RUN python manage.py migrate && \
     python manage.py seed_proposals && \
     DJANGO_SUPERUSER_USERNAME=demo \
     DJANGO_SUPERUSER_EMAIL=demo@example.invalid \
-    DJANGO_SUPERUSER_PASSWORD=themis-demo \
+    DJANGO_SUPERUSER_PASSWORD=astraea-demo \
     python manage.py createsuperuser --noinput && \
     python manage.py collectstatic --noinput
 

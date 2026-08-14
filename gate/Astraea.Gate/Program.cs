@@ -1,5 +1,5 @@
 using System.Text.Json;
-using Themis.Gate;
+using Astraea.Gate;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,7 +23,7 @@ builder.Services.AddCors(options => options.AddDefaultPolicy(policy => policy
 var app = builder.Build();
 app.UseCors();
 
-app.MapGet("/healthz", () => Results.Ok(new { status = "ok", service = "themis-gate" }));
+app.MapGet("/healthz", () => Results.Ok(new { status = "ok", service = "astraea-gate" }));
 
 app.MapGet("/failure-modes", () => Results.Ok(
     ReconciliationEngine.FailureModes

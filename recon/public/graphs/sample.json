@@ -1,13 +1,13 @@
 {
   "meta": {
-    "title": "Themis Architecture Recon",
-    "purpose": "The sample instance of the recon viewer: Themis's own governed curation plane, drawn in the same lanes → nodes → typed edges contract. Swap in any graph.json to recon a different system.",
+    "title": "Astraea Architecture Recon",
+    "purpose": "The sample instance of the recon viewer: Astraea's own governed curation plane, drawn in the same lanes → nodes → typed edges contract. Swap in any graph.json to recon a different system.",
     "confidenceLegend": {
       "JD": "In the repo — read the code",
       "PUB": "Verified live against real data",
       "INF": "Design intent — not yet built"
     },
-    "disclaimer": "Self-portrait of the Themis repo; the sample data that ships publicly."
+    "disclaimer": "Self-portrait of the Astraea repo; the sample data that ships publicly."
   },
   "themes": {
     "light": {
@@ -36,7 +36,7 @@
   "nodeClasses": [
     { "key": "Actor", "short": "ACTOR", "glyph": "○", "colorLight": "#45484d", "colorDark": "#b9bec5", "definition": "External party exchanging data or judgment with the system", "memberCount": 2 },
     { "key": "Physical process", "short": "PHYSICAL", "glyph": "▷", "colorLight": "#8a4b32", "colorDark": "#e2a184", "definition": "Work that happens outside software", "memberCount": 0 },
-    { "key": "System", "short": "SYSTEM", "glyph": "▢", "colorLight": "#3c6285", "colorDark": "#8fbde8", "definition": "Software Themis builds and operates", "memberCount": 5 },
+    { "key": "System", "short": "SYSTEM", "glyph": "▢", "colorLight": "#3c6285", "colorDark": "#8fbde8", "definition": "Software Astraea builds and operates", "memberCount": 5 },
     { "key": "Data asset", "short": "DATA ASSET", "glyph": "◆", "colorLight": "#56479b", "colorDark": "#b3a4ee", "definition": "A dataset whose value is its trustworthiness", "memberCount": 3 },
     { "key": "Data store", "short": "DATA STORE", "glyph": "▤", "colorLight": "#1c6a6a", "colorDark": "#79cac2", "definition": "Where the facts physically live", "memberCount": 1 },
     { "key": "Practice", "short": "PRACTICE", "glyph": "✚", "colorLight": "#5b6a2c", "colorDark": "#b7c47c", "definition": "A discipline enforced in code, not in memory", "memberCount": 1 },
@@ -112,7 +112,7 @@
     },
     {
       "id": "gate", "lane": 2, "laneTitle": "VERIFICATION", "class": "System", "confidence": "PUB",
-      "label": "Themis.Gate (.NET 8)", "subtitle": "Reconciliation + ontology law; verdicts are named, never lumped",
+      "label": "Astraea.Gate (.NET 8)", "subtitle": "Reconciliation + ontology law; verdicts are named, never lumped",
       "evidence": [
         { "source": "WEB", "text": "First live run: 1,083 edges pass; 14 of 20 retypes refused as substance_demotion (~$10.9B protected)." },
         { "source": "JD", "text": "22 xUnit tests; endpoints /reconcile, /validate-edge, /validate-merge, /validate-retype." }
@@ -167,7 +167,7 @@
       "evidence": [
         { "source": "WEB", "text": "Connector opens SQLite in mode=ro; substance is counted across the full NODE_REF_COLS mirror." }
       ],
-      "whyItMatters": "Themis never writes it: decisions export as a JSON log for the graph's own dry-run-by-default sweeps.",
+      "whyItMatters": "Astraea never writes it: decisions export as a JSON log for the graph's own dry-run-by-default sweeps.",
       "questions": ["When does the decisions log become a two-way sync, and what gates that?"],
       "undrawnRelation": null
     },
@@ -206,15 +206,15 @@
     { "from": "sources", "to": "flywheel", "verb": "FEEDS", "family": "data", "fromLabel": "SEC EDGAR + USAspending", "toLabel": "Extraction flywheel" },
     { "from": "flywheel", "to": "drafts", "verb": "GENERATES", "family": "material", "fromLabel": "Extraction flywheel", "toLabel": "Draft queues" },
     { "from": "citation", "to": "reviewer", "verb": "ACCELERATES", "family": "capability", "fromLabel": "Citation-check agents", "toLabel": "The human curator" },
-    { "from": "drafts", "to": "gate", "verb": "FLOWS_TO", "family": "material", "fromLabel": "Draft queues", "toLabel": "Themis.Gate (.NET 8)" },
-    { "from": "law", "to": "gate", "verb": "GOVERNS", "family": "control", "fromLabel": "Named failure modes", "toLabel": "Themis.Gate (.NET 8)" },
-    { "from": "gate", "to": "portal", "verb": "FEEDS", "family": "data", "fromLabel": "Themis.Gate (.NET 8)", "toLabel": "Adjudication portal (Django 5)" },
+    { "from": "drafts", "to": "gate", "verb": "FLOWS_TO", "family": "material", "fromLabel": "Draft queues", "toLabel": "Astraea.Gate (.NET 8)" },
+    { "from": "law", "to": "gate", "verb": "GOVERNS", "family": "control", "fromLabel": "Named failure modes", "toLabel": "Astraea.Gate (.NET 8)" },
+    { "from": "gate", "to": "portal", "verb": "FEEDS", "family": "data", "fromLabel": "Astraea.Gate (.NET 8)", "toLabel": "Adjudication portal (Django 5)" },
     { "from": "portal", "to": "reviewer", "verb": "SERVES", "family": "delivery", "fromLabel": "Adjudication portal (Django 5)", "toLabel": "The human curator" },
     { "from": "truth", "to": "portal", "verb": "GOVERNS", "family": "control", "fromLabel": "A wrong number is worse than no number", "toLabel": "Adjudication portal (Django 5)" },
     { "from": "reviewer", "to": "kg", "verb": "DELIVERS_TO", "family": "delivery", "fromLabel": "The human curator", "toLabel": "The knowledge graph" },
     { "from": "kg", "to": "census", "verb": "MAPS_TO", "family": "data", "fromLabel": "The knowledge graph", "toLabel": "Ontology census" },
     { "from": "kg", "to": "substance", "verb": "MAPS_TO", "family": "data", "fromLabel": "The knowledge graph", "toLabel": "Substance stats" },
-    { "from": "substance", "to": "gate", "verb": "GROUNDS", "family": "capability", "fromLabel": "Substance stats", "toLabel": "Themis.Gate (.NET 8)" },
+    { "from": "substance", "to": "gate", "verb": "GROUNDS", "family": "capability", "fromLabel": "Substance stats", "toLabel": "Astraea.Gate (.NET 8)" },
     { "from": "kg", "to": "recon", "verb": "POWERS", "family": "capability", "fromLabel": "The knowledge graph", "toLabel": "This viewer" },
     { "from": "recon", "to": "reviewer", "verb": "SERVES", "family": "delivery", "fromLabel": "This viewer", "toLabel": "The human curator" }
   ],
@@ -236,12 +236,12 @@
     },
     {
       "number": "04", "node": "kg", "title": "Read-only is a feature",
-      "body": "Themis holds no write path to the graph. Decisions leave as a JSON log for governed, reversible sweeps — the blast radius of a bad day is a file.",
+      "body": "Astraea holds no write path to the graph. Decisions leave as a JSON log for governed, reversible sweeps — the blast radius of a bad day is a file.",
       "sayItAs": "Say it as: the apply step is someone else's dry run."
     }
   ],
   "shortlistQuestions": [
-    { "n": 1, "node": "gate", "nodeLabel": "Themis.Gate", "question": "Which ontology rule should earn the next slot in the gate, and what real incident justifies it?" },
+    { "n": 1, "node": "gate", "nodeLabel": "Astraea.Gate", "question": "Which ontology rule should earn the next slot in the gate, and what real incident justifies it?" },
     { "n": 2, "node": "drafts", "nodeLabel": "Draft queues", "question": "What is the aging profile of the pending queues — does anything rot un-adjudicated?" },
     { "n": 3, "node": "reviewer", "nodeLabel": "The human curator", "question": "What evidence, if any, should let a reviewer overrule a gate refusal?" },
     { "n": 4, "node": "kg", "nodeLabel": "The knowledge graph", "question": "When does the decisions log become a two-way sync, and what has to be true first?" },

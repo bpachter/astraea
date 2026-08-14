@@ -18,7 +18,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # The .NET reconciliation service. The portal never publishes a proposal the
 # gate has not passed.
-THEMIS_GATE_URL = os.environ.get("THEMIS_GATE_URL", "http://localhost:5210")
+ASTRAEA_GATE_URL = os.environ.get("ASTRAEA_GATE_URL", "http://localhost:5210")
 
 
 # Quick-start development settings - unsuitable for production

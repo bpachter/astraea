@@ -1,6 +1,6 @@
-using Themis.Gate;
+using Astraea.Gate;
 
-namespace Themis.Gate.Tests;
+namespace Astraea.Gate.Tests;
 
 public class ReconciliationEngineTests
 {

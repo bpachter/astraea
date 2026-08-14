@@ -1,4 +1,4 @@
-# Themis — AWS Phase 2 ship (docs/DEPLOYMENT.md).
+# Astraea — AWS Phase 2 ship (docs/DEPLOYMENT.md).
 #
 # Operator prerequisites (the only manual steps):
 #   1. AWS account + IAM identity with admin (or ECR/AppRunner/S3/CloudFront/IAM) access
@@ -10,9 +10,10 @@
 
 param(
   [string]$Region = "us-east-1",
-  [string]$App = "themis",
+  [string]$App = "astraea",
   # PyPI-installed CLI (see repo history: the machine that authored this could
   # not reach Amazon's MSI CDN). Swap for plain "aws" with the v2 installer.
+  # The local venv predates the Astraea rename and keeps its old directory name.
   [string]$Aws = "C:\dev\venvs\themis\Scripts\python.exe C:\dev\venvs\themis\Scripts\aws"
 )
 
@@ -30,7 +31,7 @@ foreach ($svc in "gate", "portal") {
 }
 Invoke-Aws "ecr get-login-password --region $Region" | docker login --username AWS --password-stdin $registry
 foreach ($svc in "gate", "portal") {
-  docker tag "themis-$svc" "$registry/$App-${svc}:latest"
+  docker tag "astraea-$svc" "$registry/$App-${svc}:latest"
   docker push "$registry/$App-${svc}:latest"
 }
 
@@ -77,7 +78,7 @@ Write-Host "gate: $gateUrl"
 $secret = -join ((1..50) | ForEach-Object { [char](Get-Random -InputObject (33..126)) })
 New-AppRunnerService -Name "$App-portal" -Image "$registry/$App-portal:latest" -Port 8000 `
   -HealthPath "/admin/login/" -Env @{
-    THEMIS_GATE_URL = $gateUrl
+    ASTRAEA_GATE_URL = $gateUrl
     DJANGO_DEBUG = "0"
     DJANGO_SECRET_KEY = $secret
   }
@@ -89,7 +90,7 @@ Write-Host "portal: $portalUrl"
 
 # Portal knows its public hostname; gate allows the portal origin for CORS.
 Invoke-Aws ("apprunner update-service --region $Region --service-arn $($portal.ServiceArn) " +
-  "--source-configuration ImageRepository={ImageIdentifier=$registry/$App-portal:latest,ImageRepositoryType=ECR,ImageConfiguration={Port='8000',RuntimeEnvironmentVariables={THEMIS_GATE_URL=$gateUrl,DJANGO_DEBUG='0',DJANGO_SECRET_KEY=$secret,DJANGO_ALLOWED_HOSTS=$($portal.ServiceUrl),DJANGO_CSRF_TRUSTED_ORIGINS=$portalUrl}}}")
+  "--source-configuration ImageRepository={ImageIdentifier=$registry/$App-portal:latest,ImageRepositoryType=ECR,ImageConfiguration={Port='8000',RuntimeEnvironmentVariables={ASTRAEA_GATE_URL=$gateUrl,DJANGO_DEBUG='0',DJANGO_SECRET_KEY=$secret,DJANGO_ALLOWED_HOSTS=$($portal.ServiceUrl),DJANGO_CSRF_TRUSTED_ORIGINS=$portalUrl}}}")
 Invoke-Aws ("apprunner update-service --region $Region --service-arn $($gate.ServiceArn) " +
   "--source-configuration ImageRepository={ImageIdentifier=$registry/$App-gate:latest,ImageRepositoryType=ECR,ImageConfiguration={Port='8080',RuntimeEnvironmentVariables={PortalOrigins=$portalUrl}}}")
 
@@ -103,4 +104,4 @@ Write-Host "CloudFront: create a distribution with origin $bucket (OAC), default
 Write-Host "left as a follow-up step so the operator chooses the domain/cert story first."
 
 Write-Host "`nSHIPPED. gate=$gateUrl portal=$portalUrl s3=s3://$bucket"
-Write-Host "Smoke: curl $gateUrl/healthz ; open $portalUrl/admin/ (demo / themis-demo)"
+Write-Host "Smoke: curl $gateUrl/healthz ; open $portalUrl/admin/ (demo / astraea-demo)"

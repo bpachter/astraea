@@ -14,6 +14,6 @@ urlpatterns = [
     path("api/", include(router.urls)),
 ]
 
-admin.site.site_header = "Themis — adjudication portal"
-admin.site.site_title = "Themis"
+admin.site.site_header = "Astraea — adjudication portal"
+admin.site.site_title = "Astraea"
 admin.site.index_title = "Governed curation for the knowledge graph"

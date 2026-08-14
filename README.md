@@ -1,25 +1,25 @@
-# Themis — a governed curation plane for an AI-augmented knowledge graph
+# Astraea — a governed curation plane for an AI-augmented knowledge graph
 
 AI proposes. A typed service verifies. A human governs. Only then does the graph publish.
 
-Themis is the governance apparatus pattern extracted from [Thessa](https://thessa.space),
+Astraea is the governance apparatus pattern extracted from [Thessa](https://thessa.space),
 a supply/value-chain knowledge graph whose value is that the numbers in it are **true**.
 An autonomous extraction flywheel can propose thousands of facts; the one thing it must
-never be able to do is publish a plausible wrong number. Themis is the pair of services
+never be able to do is publish a plausible wrong number. Astraea is the pair of services
 that stand between a proposal and the graph:
 
 ```mermaid
 flowchart LR
     A["Extraction flywheel\n(LLM agents propose facts\n+ independent citation check)"]
-    B["Themis.Gate\nASP.NET Core 8\ndeterministic reconciliation"]
-    C["Themis Portal\nDjango 5 + DRF\nhuman adjudication"]
+    B["Astraea.Gate\nASP.NET Core 8\ndeterministic reconciliation"]
+    C["Astraea Portal\nDjango 5 + DRF\nhuman adjudication"]
     D[("Knowledge graph\npublishes")]
     A -->|proposal| B
     B -->|named verdict| C
     C -->|approved only| D
 ```
 
-- **`gate/` — Themis.Gate (C# / ASP.NET Core 8).** A deterministic reconciliation
+- **`gate/` — Astraea.Gate (C# / ASP.NET Core 8).** A deterministic reconciliation
   service: segment revenue publishes only if it ties to the consolidated figure in the
   same filing. Failures come back *named*, never lumped. Deterministic validation wants
   a compiler — the domain is typed records, the rules are LINQ, the suite is xUnit.
@@ -49,7 +49,7 @@ API, a hard error message in the admin).
 
 The fastest path is containers — the same images the AWS deployment ships
 (see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)); the portal bakes a fresh seeded
-demo database at build time (login `demo` / `themis-demo`):
+demo database at build time (login `demo` / `astraea-demo`):
 
 ```bash
 docker compose up --build
@@ -61,11 +61,11 @@ gate over HTTP.
 **Gate** (needs .NET 8 SDK):
 
 ```bash
-dotnet test gate/Themis.sln
+dotnet test gate/Astraea.sln
 ```
 
 ```bash
-dotnet run --project gate/Themis.Gate --urls http://localhost:5210
+dotnet run --project gate/Astraea.Gate --urls http://localhost:5210
 ```
 
 **Portal** (needs Python 3.12+):
@@ -84,11 +84,11 @@ Then open `http://localhost:8642/admin/` → Proposals → select all → action
 Approve `Apple Inc.` and it goes through with your name on the review.
 
 Django's default port 8000 sits inside a Windows excluded-port range on some machines;
-any port works (`runserver 8642`). The gate URL is configurable via `THEMIS_GATE_URL`.
+any port works (`runserver 8642`). The gate URL is configurable via `ASTRAEA_GATE_URL`.
 
 ## Two modes: seeded demo, or a live graph
 
-Out of the box Themis runs on the seeded public data below. Pointed at a live
+Out of the box Astraea runs on the seeded public data below. Pointed at a live
 Thessa graph (`THESSA_GATE_URL`-style env: `THESSA_KG_DB`), three commands put
 the **real** backlog through the same governance — strictly read-only; the
 connector opens SQLite in `mode=ro` and decisions leave as a JSON log
@@ -98,7 +98,7 @@ to apply:
 ```bash
 python manage.py import_kg        # ontology census + pending drafts + retypes, with per-node substance
 python manage.py run_gate         # batch the .NET gate over every queue
-python manage.py export_decisions # decisions out as a JSON log; Themis never writes the graph
+python manage.py export_decisions # decisions out as a JSON log; Astraea never writes the graph
 ```
 
 Substance is counted across **every** node-referencing column, enumerated from
@@ -190,7 +190,7 @@ confidence chip. The rendering layer knows nothing about any company — swap
 npm --prefix recon install && npm --prefix recon run dev
 ```
 
-The public sample instance is a self-portrait: Themis's own governance loop drawn
+The public sample instance is a self-portrait: Astraea's own governance loop drawn
 in its own contract. A second view, **PRIMER**, is a hand-holding walkthrough of
 metabolomics from foundations to implications (distilled from the TMIC
 introductory lecture series), with self-checks and jump links into the graph.
@@ -227,7 +227,7 @@ Robinson, J.L. et al., *An atlas of human metabolism*, Sci. Signal. 13, eaaz1482
 ## Relationship to Thessa
 
 Thessa's graph (~11,000 organizations, ~22K typed edges over SEC filings and 78K+ federal
-contracts) and its database are private. Themis is the governance *pattern* made public,
+contracts) and its database are private. Astraea is the governance *pattern* made public,
 runnable end-to-end on seeded public data. Same rules, same failure vocabulary, no
 proprietary bytes.
 

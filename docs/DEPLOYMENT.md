@@ -1,6 +1,6 @@
 # AWS deployment — scope
 
-Target: the public demo of Themis running on AWS at portfolio cost (≤ ~$12/month),
+Target: the public demo of Astraea running on AWS at portfolio cost (≤ ~$12/month),
 with an architecture that reads like production engineering, not a tutorial.
 
 ## What deploys (and what deliberately does not)
@@ -8,7 +8,7 @@ with an architecture that reads like production engineering, not a tutorial.
 | piece | runtime | deploys as | state |
 |---|---|---|---|
 | `recon/` viewer (RECON + PRIMER + ATLAS) | static after `vite build` | **S3 + CloudFront** | none — atlas JSON ships as static assets |
-| `gate/` Themis.Gate | ASP.NET Core 8 container | **App Runner** (via ECR) | stateless |
+| `gate/` Astraea.Gate | ASP.NET Core 8 container | **App Runner** (via ECR) | stateless |
 | `portal/` adjudication | Django 5 + gunicorn container | **App Runner** (via ECR) | seeded SQLite **baked into the image** |
 | live-KG mode (`import_kg`, real queues) | — | **stays local, by design** | the graph is private; the cloud runs seeded demo mode only |
 
@@ -25,7 +25,7 @@ the settings are already env-driven.
 flowchart LR
     U[Browser] --> CF[CloudFront + S3\nrecon static build]
     U --> P[App Runner\nportal - Django/gunicorn]
-    P -->|THEMIS_GATE_URL| G[App Runner\ngate - ASP.NET Core 8]
+    P -->|ASTRAEA_GATE_URL| G[App Runner\ngate - ASP.NET Core 8]
     ECR[(ECR images)] --> P
     ECR --> G
     GH[GitHub Actions\nOIDC role, no stored keys] --> ECR
@@ -74,11 +74,11 @@ not.
 1. **Containerize** — `gate/Dockerfile` (multi-stage: sdk → aspnet runtime,
    `PortalOrigins` env), `portal/Dockerfile` (python-slim, gunicorn + whitenoise
    for admin static files, entrypoint runs migrate/seed/createsuperuser from
-   env, `DJANGO_*` + `THEMIS_GATE_URL` env). Verify both with local
+   env, `DJANGO_*` + `ASTRAEA_GATE_URL` env). Verify both with local
    `docker run` + the existing test suites before any AWS step.
 2. **Ship by hand once** — ECR push, two App Runner services, S3 bucket +
    CloudFront distribution for `recon/dist` (`--base` set for assets). Wire
-   `THEMIS_GATE_URL`, `DJANGO_ALLOWED_HOSTS`, `DJANGO_CSRF_TRUSTED_ORIGINS`,
+   `ASTRAEA_GATE_URL`, `DJANGO_ALLOWED_HOSTS`, `DJANGO_CSRF_TRUSTED_ORIGINS`,
    `DJANGO_SECRET_KEY` (Secrets Manager or App Runner env), `PortalOrigins`.
    Smoke-test the full loop against the live URLs.
 3. **Automate** — GitHub Actions with an OIDC-assumed IAM role (no long-lived

@@ -1,5 +1,5 @@
 # Local orchestration of the two backend services — the same images Phase 2
-# ships to App Runner. Portal: http://localhost:8642 (demo / themis-demo);
+# ships to App Runner. Portal: http://localhost:8642 (demo / astraea-demo);
 # gate: http://localhost:5210/healthz.
 services:
   gate:
@@ -11,7 +11,7 @@ services:
       context: .
       dockerfile: portal/Dockerfile
     environment:
-      THEMIS_GATE_URL: http://gate:8080
+      ASTRAEA_GATE_URL: http://gate:8080
     ports:
       - "8642:8000"
     depends_on:

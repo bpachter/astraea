@@ -10,7 +10,7 @@ from adjudication.models import EdgeProposal, MergeProposal, Proposal, TypePropo
 
 class Command(BaseCommand):
     help = (
-        "Export adjudicated decisions as a JSON log. Themis never writes to the "
+        "Export adjudicated decisions as a JSON log. Astraea never writes to the "
         "live graph — the apply step belongs to the graph's own governed sweeps, "
         "dry-run by default, with this file as the input."
     )
@@ -19,7 +19,7 @@ class Command(BaseCommand):
         now = timezone.now()
         out = {
             "exported_at": now.isoformat(),
-            "tool": "themis",
+            "tool": "astraea",
             "note": "Decisions only; application is a separate, reversible, logged step.",
             "segment_proposals": [
                 {
