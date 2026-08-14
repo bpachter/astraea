@@ -53,7 +53,14 @@ public sealed record RetypeProposalDto(
     string Source,                 // "rule" | "llm" | curator
     GraphSubstance Substance);
 
-public sealed record LawVerdict(bool Publishable, string Status, string Detail);
+// CalibratedConfidence: the raw extraction confidence mapped through the
+// adjudication-history calibration table when both exist — what a confidence
+// of this size has empirically been worth.
+public sealed record LawVerdict(
+    bool Publishable,
+    string Status,
+    string Detail,
+    double? CalibratedConfidence = null);
 
 /// <summary>
 /// Ontology law: the identity and typing rules of the graph as deterministic,

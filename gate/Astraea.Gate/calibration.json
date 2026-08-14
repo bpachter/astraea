@@ -1,0 +1,97 @@
+{
+ "method": "split-conformal binned precision (monotone)",
+ "source_n": 1691,
+ "bins": [
+  {
+   "raw_lo": 0.5,
+   "raw_hi": 0.84,
+   "calibrated": 0.869,
+   "n": 84
+  },
+  {
+   "raw_lo": 0.84,
+   "raw_hi": 0.84,
+   "calibrated": 1.0,
+   "n": 85
+  },
+  {
+   "raw_lo": 0.84,
+   "raw_hi": 0.87,
+   "calibrated": 1.0,
+   "n": 84
+  },
+  {
+   "raw_lo": 0.87,
+   "raw_hi": 0.87,
+   "calibrated": 1.0,
+   "n": 85
+  },
+  {
+   "raw_lo": 0.87,
+   "raw_hi": 0.87,
+   "calibrated": 1.0,
+   "n": 85
+  },
+  {
+   "raw_lo": 0.87,
+   "raw_hi": 0.87,
+   "calibrated": 1.0,
+   "n": 84
+  },
+  {
+   "raw_lo": 0.87,
+   "raw_hi": 0.87,
+   "calibrated": 1.0,
+   "n": 85
+  },
+  {
+   "raw_lo": 0.87,
+   "raw_hi": 0.9,
+   "calibrated": 1.0,
+   "n": 84
+  },
+  {
+   "raw_lo": 0.9,
+   "raw_hi": 0.93,
+   "calibrated": 1.0,
+   "n": 85
+  },
+  {
+   "raw_lo": 0.93,
+   "raw_hi": 0.95,
+   "calibrated": 1.0,
+   "n": 85
+  }
+ ],
+ "validation": {
+  "n": 845,
+  "max_abs_gap": 0.1176,
+  "per_bin": [
+   {
+    "raw_hi": 0.84,
+    "empirical": 0.9382,
+    "n": 178
+   },
+   {
+    "raw_hi": 0.87,
+    "empirical": 0.958,
+    "n": 476
+   },
+   {
+    "raw_hi": 0.9,
+    "empirical": 0.913,
+    "n": 46
+   },
+   {
+    "raw_hi": 0.93,
+    "empirical": 0.8824,
+    "n": 119
+   },
+   {
+    "raw_hi": 0.95,
+    "empirical": 0.8846,
+    "n": 26
+   }
+  ]
+ }
+}

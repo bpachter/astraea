@@ -132,6 +132,20 @@ Beyond revenue reconciliation, the gate enforces the graph's identity rules:
 | `POST /validate-merge` | `bare_name_merge`, `merge_direction_suspect` | never merge a bare surname or acronym on name evidence (PRATT & MILLER is not Pratt & Whitney); survivors are chosen on substance |
 | `POST /validate-retype` | `substance_demotion` | nodes holding contracts, tickers, or identity bridges cannot be demoted to "generic" |
 
+## Calibrated confidence (powerscope's conformal pattern)
+
+An extraction confidence is an assertion; the gate turns it into a measurement.
+`manage.py calibrate_confidence` fits a split-conformal table (deciles of raw
+confidence -> empirical adjudicator precision, monotone by cumulative max) from
+real verified/rejected outcomes, and `/validate-edge` verdicts then carry
+`calibrated_confidence` alongside the raw value. Fitted on 1,691 adjudicated
+drafts, the current table's held-out validation gap is 0.118 — and the finding
+is that the flywheel is *underconfident*: raw 0.84 extractions are upheld 86.9%
+of the time, and everything above is ~1.0. The same algorithm is implemented
+independently in Python (`portal/adjudication/calibration.py`) and C#
+(`gate/Astraea.Gate/Calibration.cs`), with one shared fixture pinned in both
+test suites so the implementations must agree.
+
 ## The seed data is honest
 
 Two proposals are real — Apple and Microsoft FY2023 reportable segments in **whole USD**,

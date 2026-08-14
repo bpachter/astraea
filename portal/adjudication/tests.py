@@ -153,3 +153,54 @@ class GovernedProposalTests(TestCase):
         body = merge.gate_request_body
         self.assertFalse(body["shared_identity"])
         self.assertEqual(body["survivor"], substance)
+
+
+class CalibrationTests(TestCase):
+    """The shared calibration fixture — the .NET suite (CalibrationTests.cs)
+    pins these exact values from its own independent implementation; the two
+    suites agreeing on one fixture is the cross-stack contract."""
+
+    FIXTURE = [
+        (0.30, 0), (0.35, 0), (0.40, 0), (0.45, 1), (0.50, 0),
+        (0.55, 1), (0.60, 0), (0.65, 1), (0.70, 1), (0.75, 0),
+        (0.80, 1), (0.82, 1), (0.85, 1), (0.88, 0), (0.90, 1),
+        (0.92, 1), (0.94, 1), (0.96, 1), (0.98, 1), (0.99, 1),
+    ]
+
+    def test_fixture_produces_the_cross_stack_pinned_table(self):
+        from .calibration import calibrate
+
+        table = calibrate(self.FIXTURE, bins=5)
+        self.assertEqual(table["source_n"], 20)
+        expected = [
+            {"raw_lo": 0.30, "raw_hi": 0.40, "calibrated": 0.0, "n": 2},
+            {"raw_lo": 0.50, "raw_hi": 0.60, "calibrated": 0.0, "n": 2},
+            {"raw_lo": 0.70, "raw_hi": 0.80, "calibrated": 1.0, "n": 2},
+            {"raw_lo": 0.85, "raw_hi": 0.90, "calibrated": 1.0, "n": 2},
+            {"raw_lo": 0.94, "raw_hi": 0.98, "calibrated": 1.0, "n": 2},
+        ]
+        self.assertEqual(table["bins"], expected)
+        self.assertEqual(table["validation"]["n"], 10)
+        self.assertEqual(table["validation"]["max_abs_gap"], 1.0)
+
+    def test_apply_matches_the_dotnet_implementation(self):
+        from .calibration import apply_calibration, calibrate
+
+        table = calibrate(self.FIXTURE, bins=5)
+        self.assertEqual(apply_calibration(0.55, table), 0.0)
+        self.assertEqual(apply_calibration(0.97, table), 1.0)
+        self.assertEqual(apply_calibration(1.00, table), 1.0)
+        self.assertEqual(apply_calibration(0.05, table), 0.0)
+
+    def test_calibrated_values_are_monotone(self):
+        from .calibration import calibrate
+
+        bins = calibrate(self.FIXTURE, bins=5)["bins"]
+        for prev, cur in zip(bins, bins[1:]):
+            self.assertGreaterEqual(cur["calibrated"], prev["calibrated"])
+
+    def test_too_few_pairs_is_a_refusal(self):
+        from .calibration import calibrate
+
+        with self.assertRaises(ValueError):
+            calibrate(self.FIXTURE[:8], bins=5)

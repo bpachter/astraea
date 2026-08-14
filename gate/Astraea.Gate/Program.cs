@@ -33,8 +33,23 @@ app.MapGet("/failure-modes", () => Results.Ok(
 app.MapPost("/reconcile", (ExtractionProposal proposal) =>
     Results.Ok(ReconciliationEngine.Evaluate(proposal)));
 
+// Fitted by the portal's calibrate_confidence command from real adjudication
+// outcomes; absent file = no calibrated field, never a made-up one.
+var calibration = CalibrationTable.LoadOrNull(
+    Path.Combine(AppContext.BaseDirectory, "calibration.json"));
+
+app.MapGet("/calibration", () =>
+    calibration is null
+        ? Results.NotFound(new { error = "no calibration table fitted yet — run manage.py calibrate_confidence" })
+        : Results.Ok(calibration));
+
 app.MapPost("/validate-edge", (EdgeProposalDto edge) =>
-    Results.Ok(OntologyLaw.ValidateEdge(edge)));
+{
+    var verdict = OntologyLaw.ValidateEdge(edge);
+    if (calibration is not null && edge.Confidence is { } raw)
+        verdict = verdict with { CalibratedConfidence = calibration.Apply((double)raw) };
+    return Results.Ok(verdict);
+});
 
 app.MapPost("/validate-merge", (MergeProposalDto merge) =>
     Results.Ok(OntologyLaw.ValidateMerge(merge)));

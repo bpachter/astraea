@@ -6,4 +6,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <!-- Fitted by the portal's calibrate_confidence command; optional. -->
+    <Content Update="calibration.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>

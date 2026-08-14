@@ -240,6 +240,7 @@ class EdgeProposalAdmin(GovernedAdmin):
         "customer_name",
         "short_component",
         "confidence",
+        "calibrated",
         "disclosed_currency",
         "status_badge",
         "gate_badge",
@@ -252,6 +253,15 @@ class EdgeProposalAdmin(GovernedAdmin):
     def short_component(self, obj):
         text = obj.component_desc or ""
         return text if len(text) <= 60 else text[:57] + "…"
+
+    @admin.display(description="calibrated")
+    def calibrated(self, obj):
+        from .calibration import apply_calibration, load_table
+
+        table = load_table()
+        if table is None or obj.confidence is None:
+            return "—"
+        return f"{obj.confidence:.2f} → {apply_calibration(obj.confidence, table):.2f}"
 
 
 @admin.register(TypeProposal)
