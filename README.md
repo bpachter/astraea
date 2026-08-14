@@ -48,8 +48,10 @@ API, a hard error message in the admin).
 ## Run it
 
 The fastest path is containers — the same images the AWS deployment ships
-(see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)); the portal bakes a fresh seeded
-demo database at build time (login `demo` / `astraea-demo`):
+(architecture and rationale in [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md); what each
+AWS service actually does and costs in [docs/AWS_STACK.md](docs/AWS_STACK.md));
+the portal bakes a fresh seeded demo database at build time (login `demo` /
+`astraea-demo`):
 
 ```bash
 docker compose up --build

@@ -60,14 +60,24 @@ inside the portal adjudicating the baked demo data against the containerized
 gate with correct named verdicts. The baked db carries exactly the public
 seed and zero live-KG rows.
 
-**Phase 2 scripted, awaiting credentials.** `deploy/ship-phase2.ps1` executes
-the whole ship — ECR repos + pushes, the App Runner ECR-access role, both
-services with env wiring (gate URL into the portal, portal origin into the
-gate's CORS, generated `DJANGO_SECRET_KEY`), and the S3 sync — once the
-operator has run `aws configure`. CloudFront distribution is the scripted
-follow-up after the domain/cert decision. API-plane reachability from the
-build machine is confirmed (STS TLS clean) even while Amazon's CDN hosts are
-not.
+**Phase 2 SHIPPED** (us-east-2). Two App Runner services from ECR, cross-wired
+by environment variable, plus the S3 bucket for the recon build:
+
+- gate   — https://wmc38pwmtw.us-east-2.awsapprunner.com (`/healthz`, `/lookup`)
+- portal — https://zsc9c6t7g3.us-east-2.awsapprunner.com (`/admin/`, demo / astraea-demo)
+- bucket — s3://astraea-recon-793140950071
+
+Two failures the deployment found that no local test could:
+
+1. `--instance-configuration Cpu='0.25 vCPU',Memory='0.5 GB'` — values containing
+   spaces do not survive CLI shorthand parsing. Every structured argument is now
+   passed as a JSON file.
+2. **CSRF 403 on the deployed admin login.** App Runner terminates TLS and
+   forwards plain HTTP, so Django built an `http://` origin and rejected real
+   `https://` logins. Fixed with `SECURE_PROXY_SSL_HEADER` (plus secure cookies)
+   whenever `DEBUG` is off — a bug that only exists behind a proxy.
+
+CloudFront remains the scripted follow-up, after the domain/cert decision.
 
 ## Phases
 

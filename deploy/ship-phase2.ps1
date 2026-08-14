@@ -28,6 +28,17 @@ $repoRoot = Split-Path $PSScriptRoot -Parent
 function Invoke-Aws { param([string]$Cmd) Invoke-Expression "$Aws $Cmd" }
 function Write-Step { param([string]$Text) Write-Host "`n=== $Text" -ForegroundColor Cyan }
 
+# Existence probes are exit-code driven, not exception driven: whether a failing
+# native command throws depends on the PowerShell version, and a swallowed
+# "does not exist" would skip creation and fail later with a confusing error.
+function Test-AwsOk { param([string]$Cmd)
+  $prev = $ErrorActionPreference
+  $ErrorActionPreference = "Continue"
+  try { Invoke-Expression "$Aws $Cmd" 2>&1 | Out-Null; return ($LASTEXITCODE -eq 0) }
+  catch { return $false }
+  finally { $ErrorActionPreference = $prev }
+}
+
 # ---- 0. Identity -----------------------------------------------------------
 Write-Step "Identity"
 $account = (Invoke-Aws "sts get-caller-identity --query Account --output text").Trim()
@@ -37,11 +48,10 @@ Write-Host "account $account · region $Region · registry $registry"
 # ---- 1. Images: ghcr -> ECR ------------------------------------------------
 Write-Step "Images"
 foreach ($svc in "gate", "portal") {
-  try { Invoke-Aws "ecr describe-repositories --repository-names $App-$svc --region $Region" | Out-Null }
-  catch {
+  if (-not (Test-AwsOk "ecr describe-repositories --repository-names $App-$svc --region $Region")) {
     Invoke-Aws "ecr create-repository --repository-name $App-$svc --region $Region" | Out-Null
     Write-Host "created ECR repository $App-$svc"
-  }
+  } else { Write-Host "ECR repository $App-$svc already present" }
 }
 Invoke-Aws "ecr get-login-password --region $Region" | docker login --username AWS --password-stdin $registry
 if (-not $SkipPull) {
@@ -61,8 +71,9 @@ foreach ($svc in "gate", "portal") {
 Write-Step "IAM"
 $roleName = "$App-apprunner-ecr-access"
 $trust = '{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Principal":{"Service":"build.apprunner.amazonaws.com"},"Action":"sts:AssumeRole"}]}'
-try { Invoke-Aws "iam get-role --role-name $roleName" | Out-Null }
-catch {
+if (Test-AwsOk "iam get-role --role-name $roleName") {
+  Write-Host "role $roleName already present"
+} else {
   $trustFile = New-TemporaryFile
   $trust | Set-Content $trustFile -Encoding ascii
   Invoke-Aws "iam create-role --role-name $roleName --assume-role-policy-document file://$($trustFile.FullName)" | Out-Null
@@ -78,8 +89,14 @@ function Get-Service { param([string]$Name)
   ($json | ConvertFrom-Json).ServiceSummaryList | Where-Object { $_.ServiceName -eq $Name }
 }
 
+function Write-JsonArg { param($Object)
+  $file = New-TemporaryFile
+  ($Object | ConvertTo-Json -Depth 8) | Set-Content $file -Encoding ascii
+  return $file.FullName
+}
+
 function New-SourceConfig { param([string]$Image, [int]$Port, [hashtable]$Env)
-  $cfg = @{
+  Write-JsonArg @{
     AuthenticationConfiguration = @{ AccessRoleArn = $roleArn }
     AutoDeploymentsEnabled      = $false
     ImageRepository             = @{
@@ -88,10 +105,12 @@ function New-SourceConfig { param([string]$Image, [int]$Port, [hashtable]$Env)
       ImageConfiguration  = @{ Port = "$Port"; RuntimeEnvironmentVariables = $Env }
     }
   }
-  $file = New-TemporaryFile
-  ($cfg | ConvertTo-Json -Depth 8) | Set-Content $file -Encoding ascii
-  return $file.FullName
 }
+
+# Values like "0.25 vCPU" and "0.5 GB" contain spaces, which CLI shorthand
+# (Cpu=...,Memory=...) cannot survive once the command line is expanded.
+# Every structured argument goes in as JSON for exactly this reason.
+$instanceConfigFile = Write-JsonArg @{ Cpu = "0.25 vCPU"; Memory = "0.5 GB" }
 
 function Wait-Service { param([string]$Name)
   while ($true) {
@@ -117,8 +136,9 @@ function Deploy-Service { param([string]$Name, [string]$Image, [int]$Port, [stri
     Write-Host "creating $Name"
     Invoke-Aws ("apprunner create-service --service-name $Name --region $Region " +
       "--source-configuration file://$cfgFile " +
-      "--instance-configuration Cpu='0.25 vCPU',Memory='0.5 GB' " +
+      "--instance-configuration file://$instanceConfigFile " +
       "--health-check-configuration Protocol=HTTP,Path=$HealthPath,Interval=10,Timeout=5,HealthyThreshold=1,UnhealthyThreshold=5") | Out-Null
+    if ($LASTEXITCODE -ne 0) { throw "create-service failed for $Name (see the CLI error above)" }
   }
   return Wait-Service $Name
 }
@@ -156,8 +176,10 @@ $null = Deploy-Service -Name "$App-gate" -Image "$registry/$App-gate:latest" -Po
 # ---- 5. Recon static site --------------------------------------------------
 Write-Step "Recon static site"
 $bucket = "$App-recon-$account"
-try { Invoke-Aws "s3api head-bucket --bucket $bucket" | Out-Null }
-catch { Invoke-Aws "s3 mb s3://$bucket --region $Region" | Out-Null }
+if (-not (Test-AwsOk "s3api head-bucket --bucket $bucket")) {
+  Invoke-Aws "s3 mb s3://$bucket --region $Region" | Out-Null
+  Write-Host "created bucket $bucket"
+}
 npm --prefix "$repoRoot\recon" run build
 Invoke-Aws "s3 sync `"$repoRoot\recon\dist`" s3://$bucket --delete"
 Write-Host "CloudFront: create a distribution with origin $bucket (OAC), default root index.html —"

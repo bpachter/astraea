@@ -45,6 +45,16 @@ CSRF_TRUSTED_ORIGINS = [
     if o.strip()
 ]
 
+# App Runner (like any TLS-terminating proxy) accepts HTTPS at the edge and
+# forwards plain HTTP to the container. Without this Django believes every
+# request is insecure, builds an http:// origin to compare against, and
+# rejects real HTTPS logins with a CSRF 403 — found by logging into the
+# deployed admin, not by any local test.
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+
 
 # Application definition
 
