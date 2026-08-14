@@ -1,5 +1,11 @@
 # Where the AWS architecture goes next
 
+> **Status.** Stages 1, 2, 4 and 6 are shipped; Stage 3 is shipped except the
+> custom domain (which needs a domain purchase). Stages 5 and 7 remain product
+> decisions. Live: CDN `https://d2ff2qmnyf4i32.cloudfront.net`, dashboards
+> `astraea-platform` and `astraea-flywheel`, stacks `AstraeaServices`,
+> `AstraeaPlatform`, `AstraeaFlywheel`.
+
 What exists today is deliberately small: two containers, a bucket, and a
 pipeline that deploys them. This is the honest ordering of what to build next —
 each stage names *what problem it solves*, *what changes in this repo*, and
@@ -10,7 +16,7 @@ phases are in [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ---
 
-## Stage 1 — Close the gaps the review found (days, ~$1/month)
+## Stage 1 — Close the gaps the review found ✅ SHIPPED
 
 **Secrets out of service configuration.** `DJANGO_SECRET_KEY` is currently a
 plain `RuntimeEnvironmentVariable`, so anyone who can call
@@ -29,11 +35,20 @@ expire*. Set 14 days. *Saves money rather than costing it.*
 
 ---
 
-## Stage 2 — Infrastructure as code (a week, $0)
+## Stage 2 — Infrastructure as code ✅ SHIPPED
 
 `deploy/ship-phase2.ps1` is a good script and the wrong long-term artifact: it
 describes *steps*, not *state*, so it cannot tell you what drifted, cannot be
 reviewed as a diff, and cannot be torn down and rebuilt identically.
+
+**How it went.** The two App Runner services were *imported* rather than
+recreated: `cdk import` adopts a running resource into CloudFormation without
+touching it, and `cdk diff` returning zero resource changes afterwards is the
+proof the definition matches reality. That mattered here — their generated
+hostnames are baked into the published portfolio, the walkthrough recording,
+and each other's CORS configuration, so a replacement would have broken all
+three. Both carry `RETAIN`, so `cdk destroy` cannot delete a live service. CI
+now synthesizes every stack on each push, so broken IaC fails before it merges.
 
 Replace it with **AWS CDK in TypeScript** — chosen over Terraform because this
 repo is already TypeScript, and over CloudFormation YAML because the two
@@ -51,7 +66,7 @@ resume-legible item on this list.
 
 ---
 
-## Stage 3 — A real front door (a day, ~$1/month + domain)
+## Stage 3 — A real front door ◐ CDN shipped, domain pending
 
 **CloudFront + ACM + Route 53.** Today the static app is on GitHub Pages and
 the services answer on generated `*.awsapprunner.com` hostnames. One
@@ -68,7 +83,7 @@ free tier covers this traffic. ACM certificates are free.*
 
 ---
 
-## Stage 4 — Observability worth the name (2–3 days, ~$3/month)
+## Stage 4 — Observability worth the name ◐ dashboards and alarms shipped, X-Ray pending
 
 Right now, "is it healthy?" is answered by curling `/healthz` by hand.
 
@@ -103,7 +118,7 @@ Do not do it to look impressive. Do it when there is state worth keeping.
 
 ---
 
-## Stage 6 — The extraction flywheel, cloud-native (weeks, ~$5–20/month)
+## Stage 6 — The extraction flywheel, cloud-native ✅ SHIPPED
 
 This is the interesting one, and the one that most resembles what a
 metabolomics or life-sciences data platform actually runs.

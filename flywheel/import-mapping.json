@@ -1,0 +1,4 @@
+{
+  "GateService": { "ServiceArn": "arn:aws:apprunner:us-east-2:793140950071:service/astraea-gate/a8444a3ceb0c41f78d826a2fc4c65e19" },
+  "PortalService": { "ServiceArn": "arn:aws:apprunner:us-east-2:793140950071:service/astraea-portal/8be3b12dbf7746eda39a801306843811" }
+}
