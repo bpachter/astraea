@@ -49,7 +49,7 @@ API, a hard error message in the admin).
 
 The fastest path is containers — the same images the AWS deployment ships
 (architecture and rationale in [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md); what each
-AWS service actually does and costs in [docs/AWS_STACK.md](docs/AWS_STACK.md));
+AWS service actually does and costs in [docs/AWS_STACK.md](docs/AWS_STACK.md); where the architecture goes next in [docs/AWS_ROADMAP.md](docs/AWS_ROADMAP.md));
 the portal bakes a fresh seeded demo database at build time (login `demo` /
 `astraea-demo`):
 
