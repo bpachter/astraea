@@ -63,8 +63,8 @@ seed and zero live-KG rows.
 **Phase 2 SHIPPED** (us-east-2). Two App Runner services from ECR, cross-wired
 by environment variable, plus the S3 bucket for the recon build:
 
-- gate   — https://wmc38pwmtw.us-east-2.awsapprunner.com (`/healthz`, `/lookup`)
-- portal — https://zsc9c6t7g3.us-east-2.awsapprunner.com (`/admin/`, demo / astraea-demo)
+- gate   — https://gate.thessa.space (`/healthz`, `/lookup`)
+- portal — https://portal.thessa.space (`/admin/`, demo / astraea-demo)
 - bucket — s3://astraea-recon-793140950071
 
 Two failures the deployment found that no local test could:

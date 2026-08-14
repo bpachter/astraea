@@ -6,9 +6,12 @@ export interface ServicesStackProps extends cdk.StackProps {
   accessRoleArn: string;
   instanceRoleArn: string;
   djangoSecretArn: string;
+  /** Where the portal reaches the gate — the custom domain once it is live. */
   gateUrl: string;
-  portalUrl: string;
-  pagesOrigin: string;
+  /** Every origin allowed to call the gate from a browser. */
+  gateCorsOrigins: string[];
+  /** Hostnames the portal will answer to; Django rejects any other Host. */
+  portalHosts: string[];
 }
 
 /**
@@ -49,7 +52,7 @@ export class ServicesStack extends cdk.Stack {
               { name: "AtlasDir", value: "/app/atlas" },
               // Server-side callers and the published static app, in the
               // order the gate's configuration parser expects.
-              { name: "PortalOrigins", value: `${props.portalUrl};${props.pagesOrigin}` },
+              { name: "PortalOrigins", value: props.gateCorsOrigins.join(";") },
             ],
           },
         },
@@ -79,6 +82,13 @@ export class ServicesStack extends cdk.Stack {
             runtimeEnvironmentVariables: [
               { name: "ASTRAEA_GATE_URL", value: props.gateUrl },
               { name: "DJANGO_DEBUG", value: "0" },
+              // Django answers 400 to any Host it was not told about, so the
+              // custom domain must be listed before DNS points at it.
+              { name: "DJANGO_ALLOWED_HOSTS", value: props.portalHosts.join(",") },
+              {
+                name: "DJANGO_CSRF_TRUSTED_ORIGINS",
+                value: props.portalHosts.map((h) => `https://${h}`).join(","),
+              },
             ],
             // By ARN, never by value: the key Django signs sessions with must
             // not be readable from the service description.

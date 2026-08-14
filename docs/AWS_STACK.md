@@ -1,9 +1,9 @@
 # The AWS stack, in plain terms
 
 **Live (us-east-2, account 793140950071):**
-[gate](https://wmc38pwmtw.us-east-2.awsapprunner.com/healthz) ·
-[lookup](https://wmc38pwmtw.us-east-2.awsapprunner.com/lookup) ·
-[portal](https://zsc9c6t7g3.us-east-2.awsapprunner.com/admin/) (`demo` / `astraea-demo`)
+[gate](https://gate.thessa.space/healthz) ·
+[lookup](https://gate.thessa.space/lookup) ·
+[portal](https://portal.thessa.space/admin/) (`demo` / `astraea-demo`)
 
 What each AWS service in this deployment actually is, why it is here rather
 than an alternative, and what it costs. Written for a reader who knows software

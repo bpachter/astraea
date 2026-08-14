@@ -1,8 +1,10 @@
 # Where the AWS architecture goes next
 
-> **Status.** Stages 1, 2, 4 and 6 are shipped; Stage 3 is shipped except the
-> custom domain (which needs a domain purchase). Stages 5 and 7 remain product
-> decisions. Live: CDN `https://d2ff2qmnyf4i32.cloudfront.net`, dashboards
+> **Status.** Stages 1, 2, 3 and 6 are shipped; Stage 4 is shipped except
+> X-Ray. No domain purchase was needed — the services live under the existing
+> `thessa.space` zone (Cloudflare DNS), which is also the honest place for
+> them: Astraea is the governance layer extracted from Thessa. Stages 5 and 7 remain product
+> decisions. Live: CDN `https://astraea.thessa.space`, dashboards
 > `astraea-platform` and `astraea-flywheel`, stacks `AstraeaServices`,
 > `AstraeaPlatform`, `AstraeaFlywheel`.
 
@@ -66,7 +68,7 @@ resume-legible item on this list.
 
 ---
 
-## Stage 3 — A real front door ◐ CDN shipped, domain pending
+## Stage 3 — A real front door ✅ SHIPPED
 
 **CloudFront + ACM + Route 53.** Today the static app is on GitHub Pages and
 the services answer on generated `*.awsapprunner.com` hostnames. One

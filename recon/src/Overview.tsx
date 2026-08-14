@@ -5,8 +5,8 @@ import type { View } from "./App";
 // The deployed gate (AWS App Runner, us-east-2). Static builds have no server
 // to ask, so the address is a constant; a failed probe degrades to "unknown"
 // rather than pretending the service is up.
-export const GATE_URL = "https://wmc38pwmtw.us-east-2.awsapprunner.com";
-export const PORTAL_URL = "https://zsc9c6t7g3.us-east-2.awsapprunner.com";
+export const GATE_URL = "https://gate.thessa.space";
+export const PORTAL_URL = "https://portal.thessa.space";
 const REPO_URL = "https://github.com/bpachter/astraea";
 
 type Probe = { state: "checking" | "up" | "unknown"; entities?: number; calibratedFrom?: number };
