@@ -39,6 +39,33 @@ const GEOMETRIES: Record<AtlasKind, THREE.BufferGeometry> = {
   metabolite: new THREE.SphereGeometry(4.8, 16, 12),
 };
 
+// Invisible raycast proxy shared by every node: hover/click hit-testing with
+// zero visible cost. Visible geometry is drawn by three InstancedMeshes.
+const PROXY_GEOMETRY = new THREE.SphereGeometry(6, 6, 4);
+const PROXY_MATERIAL = new THREE.MeshBasicMaterial({
+  transparent: true,
+  opacity: 0,
+  depthWrite: false,
+});
+// Reused per-instance transform — zero allocation per frame.
+const DUMMY = new THREE.Object3D();
+
+/** True while the element is within `margin` of the viewport (entropy's useInView). */
+function useInView(ref: { current: Element | null }, margin = "200px 0px"): boolean {
+  const [inView, setInView] = useState(true);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+    const obs = new IntersectionObserver(
+      ([entry]) => setInView(entry.isIntersecting),
+      { rootMargin: margin },
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [ref, margin]);
+  return inView;
+}
+
 function kindColor(kind: AtlasKind, theme: ThemeName) {
   return KIND_COLORS[kind][theme];
 }
@@ -94,34 +121,20 @@ export default function Atlas({ theme }: { theme: ThemeName }) {
   const fgRef = useRef<ForceGraphMethods<AtlasNode, AtlasLink>>();
   const stageRef = useRef<HTMLDivElement | null>(null);
   const [stageSize, setStageSize] = useState({ width: 900, height: 640 });
-  const meshesRef = useRef(new Map<string, THREE.Mesh>());
-  const prevSelectedRef = useRef<string | null>(null);
-  const materialsRef = useRef<{
-    base: Record<AtlasKind, THREE.MeshLambertMaterial>;
-    highlight: Record<AtlasKind, THREE.MeshLambertMaterial>;
-  } | null>(null);
+  const selectedIdRef = useRef<string | null>(null);
+  // One InstancedMesh per kind — 3 draw calls for the whole node population
+  // (lifted from entropy's flat-array + instanced-rendering engine pattern).
+  const instancesRef = useRef<Partial<Record<AtlasKind, { mesh: THREE.InstancedMesh; nodes: AtlasNode[] }>>>({});
+  const materialsRef = useRef<Record<AtlasKind, THREE.MeshLambertMaterial> | null>(null);
 
   if (!materialsRef.current) {
-    const make = (kind: AtlasKind, highlight: boolean) =>
+    const make = (kind: AtlasKind) =>
       new THREE.MeshLambertMaterial({
         color: kindColor(kind, theme),
-        emissive: highlight ? kindColor(kind, theme) : "#000000",
-        emissiveIntensity: highlight ? 0.9 : 0,
         transparent: true,
-        opacity: highlight ? 1 : 0.92,
+        opacity: 0.92,
       });
-    materialsRef.current = {
-      base: {
-        gene: make("gene", false),
-        reaction: make("reaction", false),
-        metabolite: make("metabolite", false),
-      },
-      highlight: {
-        gene: make("gene", true),
-        reaction: make("reaction", true),
-        metabolite: make("metabolite", true),
-      },
-    };
+    materialsRef.current = { gene: make("gene"), reaction: make("reaction"), metabolite: make("metabolite") };
   }
 
   useEffect(() => {
@@ -206,21 +219,58 @@ export default function Atlas({ theme }: { theme: ThemeName }) {
     return { nodes, links };
   }, [subsystem, hideCurrency]);
 
-  useEffect(() => {
-    meshesRef.current.clear();
-    prevSelectedRef.current = null;
-  }, [graphData]);
+  // Every node's visible geometry lives in three InstancedMeshes; the objects
+  // the force engine carries are invisible raycast proxies (shared geometry +
+  // shared zero-opacity material), so hover and click still work per node.
+  const nodeObject = useCallback(
+    () => new THREE.Mesh(PROXY_GEOMETRY, PROXY_MATERIAL),
+    [],
+  );
 
-  // Identity-stable: the engine digests node objects only when graphData
-  // changes, never per render or per click.
-  const nodeObject = useCallback((node: AtlasNode) => {
-    const mesh = new THREE.Mesh(
-      GEOMETRIES[node.kind],
-      materialsRef.current!.base[node.kind],
-    );
-    meshesRef.current.set(node.id, mesh);
-    return mesh;
+  const syncInstances = useCallback(() => {
+    const groups = instancesRef.current;
+    (Object.keys(groups) as AtlasKind[]).forEach((kind) => {
+      const group = groups[kind];
+      if (!group) return;
+      const selectedId = selectedIdRef.current;
+      group.nodes.forEach((node, i) => {
+        DUMMY.position.set(node.x ?? 0, node.y ?? 0, node.z ?? node.fz ?? 0);
+        DUMMY.scale.setScalar(node.id === selectedId ? 1.7 : 1);
+        DUMMY.updateMatrix();
+        group.mesh.setMatrixAt(i, DUMMY.matrix);
+      });
+      group.mesh.instanceMatrix.needsUpdate = true;
+    });
   }, []);
+
+  // Rebuild the instanced meshes when the node population changes.
+  useEffect(() => {
+    const fg = fgRef.current;
+    if (!fg || graphData.nodes.length === 0) return;
+    const scene = fg.scene();
+    const groups: typeof instancesRef.current = {};
+    (Object.keys(GEOMETRIES) as AtlasKind[]).forEach((kind) => {
+      const nodes = graphData.nodes.filter((n) => n.kind === kind);
+      if (!nodes.length) return;
+      const mesh = new THREE.InstancedMesh(
+        GEOMETRIES[kind],
+        materialsRef.current![kind],
+        nodes.length,
+      );
+      mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+      scene.add(mesh);
+      groups[kind] = { mesh, nodes };
+    });
+    instancesRef.current = groups;
+    syncInstances();
+    return () => {
+      (Object.values(groups) as Array<{ mesh: THREE.InstancedMesh }>).forEach(({ mesh }) => {
+        scene.remove(mesh);
+        mesh.dispose(); // instance buffers only; geometries/materials are shared
+      });
+      instancesRef.current = {};
+    };
+  }, [graphData, syncInstances]);
 
   const themeRef = useRef(theme);
   useEffect(() => {
@@ -241,8 +291,12 @@ export default function Atlas({ theme }: { theme: ThemeName }) {
           : "#9a9da2",
     [],
   );
+  // Width 0 renders links as GL lines instead of per-link cylinder meshes —
+  // the difference between 16k draw calls and a handful on Transport reactions.
+  const isLargeRef = useRef(false);
   const linkWidth = useCallback(
-    (l: AtlasLink) => (l.kind === "catalyzes" ? 0.3 : 0.9),
+    (l: AtlasLink) =>
+      isLargeRef.current ? 0 : l.kind === "catalyzes" ? 0.3 : 0.9,
     [],
   );
   const linkArrow = useCallback(
@@ -250,39 +304,32 @@ export default function Atlas({ theme }: { theme: ThemeName }) {
     [],
   );
 
-  // Selection highlight mutates exactly two meshes — no scene digest.
+  // Selection re-syncs instance matrices (scale pop on the selected node) —
+  // physics may have cooled, so the tick callback alone would never run this.
   useEffect(() => {
-    const materials = materialsRef.current!;
-    const prev = prevSelectedRef.current;
-    if (prev) {
-      const mesh = meshesRef.current.get(prev);
-      const node = graphData.nodes.find((n) => n.id === prev);
-      if (mesh && node) {
-        mesh.material = materials.base[node.kind];
-        mesh.scale.setScalar(1);
-      }
-    }
-    if (selected) {
-      const mesh = meshesRef.current.get(selected.id);
-      if (mesh) {
-        mesh.material = materials.highlight[selected.kind];
-        mesh.scale.setScalar(1.6);
-      }
-    }
-    prevSelectedRef.current = selected?.id ?? null;
-  }, [selected, graphData]);
+    selectedIdRef.current = selected?.id ?? null;
+    syncInstances();
+  }, [selected, syncInstances]);
 
   // Theme changes update shared materials in place; one refresh re-evaluates
   // link colors. Rare user action, so the single digest is acceptable.
   useEffect(() => {
     const materials = materialsRef.current!;
     (Object.keys(KIND_COLORS) as AtlasKind[]).forEach((kind) => {
-      materials.base[kind].color.set(kindColor(kind, theme));
-      materials.highlight[kind].color.set(kindColor(kind, theme));
-      materials.highlight[kind].emissive.set(kindColor(kind, theme));
+      materials[kind].color.set(kindColor(kind, theme));
     });
     fgRef.current?.refresh();
   }, [theme]);
+
+  // Entropy's VisualGate, adapted: pause the whole render/physics loop while
+  // the stage is scrolled out of view, resume just before it returns.
+  const stageInView = useInView(stageRef);
+  useEffect(() => {
+    const fg = fgRef.current;
+    if (!fg) return;
+    if (stageInView) fg.resumeAnimation();
+    else fg.pauseAnimation();
+  }, [stageInView, subsystem]);
 
   useEffect(() => {
     const fg = fgRef.current;
@@ -355,6 +402,7 @@ export default function Atlas({ theme }: { theme: ThemeName }) {
 
   const row = index.subsystems.find((s) => s.slug === slug);
   const isLarge = (row?.links ?? 0) > LARGE_LINK_COUNT;
+  isLargeRef.current = isLarge;
 
   return (
     <section>
@@ -430,6 +478,7 @@ export default function Atlas({ theme }: { theme: ThemeName }) {
                 linkDirectionalArrowRelPos={0.92}
                 enableNodeDrag={false}
                 warmupTicks={isLarge ? 40 : 0}
+                onEngineTick={syncInstances}
                 cooldownTicks={isLarge ? 120 : 300}
                 onNodeClick={selectNode}
                 onBackgroundClick={() => setSelected(null)}
