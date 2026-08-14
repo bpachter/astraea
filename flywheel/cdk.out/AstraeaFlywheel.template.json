@@ -1,0 +1,562 @@
+{
+ "Description": "Astraea extraction flywheel: EventBridge -> SQS -> Lambda -> gate -> DynamoDB",
+ "Resources": {
+  "Proposals97FA2A39": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "proposal_id",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "proposal_id",
+      "KeyType": "HASH"
+     }
+    ],
+    "PointInTimeRecoverySpecification": {
+     "PointInTimeRecoveryEnabled": true
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "AstraeaFlywheel/Proposals/Resource"
+   }
+  },
+  "WorkDlqEFF57BC6": {
+   "Type": "AWS::SQS::Queue",
+   "Properties": {
+    "MessageRetentionPeriod": 1209600
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "AstraeaFlywheel/WorkDlq/Resource"
+   }
+  },
+  "WorkQueue94013F35": {
+   "Type": "AWS::SQS::Queue",
+   "Properties": {
+    "RedrivePolicy": {
+     "deadLetterTargetArn": {
+      "Fn::GetAtt": [
+       "WorkDlqEFF57BC6",
+       "Arn"
+      ]
+     },
+     "maxReceiveCount": 3
+    },
+    "VisibilityTimeout": 360
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "AstraeaFlywheel/WorkQueue/Resource"
+   }
+  },
+  "PlannerLogsC228C63E": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 14
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "AstraeaFlywheel/PlannerLogs/Resource"
+   }
+  },
+  "PlannerServiceRole5F4B875C": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "AstraeaFlywheel/Planner/ServiceRole/Resource"
+   }
+  },
+  "PlannerServiceRoleDefaultPolicy6808502C": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "sqs:GetQueueAttributes",
+        "sqs:GetQueueUrl",
+        "sqs:SendMessage"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "WorkQueue94013F35",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "PlannerServiceRoleDefaultPolicy6808502C",
+    "Roles": [
+     {
+      "Ref": "PlannerServiceRole5F4B875C"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "AstraeaFlywheel/Planner/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "PlannerD1424F44": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-793140950071-us-east-2",
+     "S3Key": "a31d64ea62c4f5cbf6862d95b848498feb67a351882a0d1a970676bae977b6df.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "WORK_QUEUE_URL": {
+       "Ref": "WorkQueue94013F35"
+      }
+     }
+    },
+    "Handler": "planner.handler",
+    "LoggingConfig": {
+     "LogGroup": {
+      "Ref": "PlannerLogsC228C63E"
+     }
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "PlannerServiceRole5F4B875C",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.12",
+    "Timeout": 30
+   },
+   "DependsOn": [
+    "PlannerServiceRoleDefaultPolicy6808502C",
+    "PlannerServiceRole5F4B875C"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "AstraeaFlywheel/Planner/Resource",
+    "aws:asset:path": "asset.a31d64ea62c4f5cbf6862d95b848498feb67a351882a0d1a970676bae977b6df",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "ExtractorLogsB1DF279A": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 14
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "AstraeaFlywheel/ExtractorLogs/Resource"
+   }
+  },
+  "ExtractorServiceRole18D46933": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "AstraeaFlywheel/Extractor/ServiceRole/Resource"
+   }
+  },
+  "ExtractorServiceRoleDefaultPolicy9B8CA6B7": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "dynamodb:BatchWriteItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "Proposals97FA2A39",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": [
+        "bedrock:Converse",
+        "bedrock:InvokeModel"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        "arn:aws:bedrock:*::foundation-model/amazon.nova-2-lite-v1:0",
+        "arn:aws:bedrock:us-east-2:793140950071:inference-profile/us.amazon.nova-2-lite-v1:0"
+       ]
+      },
+      {
+       "Action": "cloudwatch:PutMetricData",
+       "Condition": {
+        "StringEquals": {
+         "cloudwatch:namespace": "Astraea/Flywheel"
+        }
+       },
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "sqs:ChangeMessageVisibility",
+        "sqs:DeleteMessage",
+        "sqs:GetQueueAttributes",
+        "sqs:GetQueueUrl",
+        "sqs:ReceiveMessage"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "WorkQueue94013F35",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ExtractorServiceRoleDefaultPolicy9B8CA6B7",
+    "Roles": [
+     {
+      "Ref": "ExtractorServiceRole18D46933"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "AstraeaFlywheel/Extractor/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "Extractor6B5FF8A9": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-793140950071-us-east-2",
+     "S3Key": "a31d64ea62c4f5cbf6862d95b848498feb67a351882a0d1a970676bae977b6df.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "PROPOSALS_TABLE": {
+       "Ref": "Proposals97FA2A39"
+      },
+      "GATE_URL": "https://wmc38pwmtw.us-east-2.awsapprunner.com",
+      "BEDROCK_MODEL_ID": "us.amazon.nova-2-lite-v1:0"
+     }
+    },
+    "Handler": "extractor.handler",
+    "LoggingConfig": {
+     "LogGroup": {
+      "Ref": "ExtractorLogsB1DF279A"
+     }
+    },
+    "MemorySize": 512,
+    "Role": {
+     "Fn::GetAtt": [
+      "ExtractorServiceRole18D46933",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.12",
+    "Timeout": 300
+   },
+   "DependsOn": [
+    "ExtractorServiceRoleDefaultPolicy9B8CA6B7",
+    "ExtractorServiceRole18D46933"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "AstraeaFlywheel/Extractor/Resource",
+    "aws:asset:path": "asset.a31d64ea62c4f5cbf6862d95b848498feb67a351882a0d1a970676bae977b6df",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "ExtractorSqsEventSourceAstraeaFlywheelWorkQueueD4C2F35941255BCB": {
+   "Type": "AWS::Lambda::EventSourceMapping",
+   "Properties": {
+    "BatchSize": 1,
+    "EventSourceArn": {
+     "Fn::GetAtt": [
+      "WorkQueue94013F35",
+      "Arn"
+     ]
+    },
+    "FunctionName": {
+     "Ref": "Extractor6B5FF8A9"
+    },
+    "ScalingConfig": {
+     "MaximumConcurrency": 5
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "AstraeaFlywheel/Extractor/SqsEventSource:AstraeaFlywheelWorkQueueD4C2F359/Resource"
+   }
+  },
+  "DailySweep631D8A0C": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "Description": "Fill the extraction queue once a day",
+    "ScheduleExpression": "cron(0 7 * * ? *)",
+    "State": "DISABLED",
+    "Targets": [
+     {
+      "Arn": {
+       "Fn::GetAtt": [
+        "PlannerD1424F44",
+        "Arn"
+       ]
+      },
+      "Id": "Target0"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "AstraeaFlywheel/DailySweep/Resource"
+   }
+  },
+  "DailySweepAllowEventRuleAstraeaFlywheelPlanner0F4C650C7687FAF7": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "PlannerD1424F44",
+      "Arn"
+     ]
+    },
+    "Principal": "events.amazonaws.com",
+    "SourceArn": {
+     "Fn::GetAtt": [
+      "DailySweep631D8A0C",
+      "Arn"
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "AstraeaFlywheel/DailySweep/AllowEventRuleAstraeaFlywheelPlanner0F4C650C"
+   }
+  },
+  "PoisonMessagesAlarm6CAC4B66": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmDescription": "A message failed extraction three times and parked in the DLQ",
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "Dimensions": [
+     {
+      "Name": "QueueName",
+      "Value": {
+       "Fn::GetAtt": [
+        "WorkDlqEFF57BC6",
+        "QueueName"
+       ]
+      }
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "ApproximateNumberOfMessagesVisible",
+    "Namespace": "AWS/SQS",
+    "Period": 300,
+    "Statistic": "Maximum",
+    "Threshold": 1,
+    "TreatMissingData": "notBreaching"
+   },
+   "Metadata": {
+    "aws:cdk:path": "AstraeaFlywheel/PoisonMessagesAlarm/Resource"
+   }
+  },
+  "ExtractorErrorsAlarmFB34235C": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmDescription": "The extractor is erroring repeatedly",
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "Dimensions": [
+     {
+      "Name": "FunctionName",
+      "Value": {
+       "Ref": "Extractor6B5FF8A9"
+      }
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "Errors",
+    "Namespace": "AWS/Lambda",
+    "Period": 900,
+    "Statistic": "Sum",
+    "Threshold": 3,
+    "TreatMissingData": "notBreaching"
+   },
+   "Metadata": {
+    "aws:cdk:path": "AstraeaFlywheel/ExtractorErrorsAlarm/Resource"
+   }
+  },
+  "FlywheelDashboard43A63FF1": {
+   "Type": "AWS::CloudWatch::Dashboard",
+   "Properties": {
+    "DashboardBody": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"widgets\":[{\"type\":\"metric\",\"width\":12,\"height\":6,\"x\":0,\"y\":0,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Gate verdicts by failure mode\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"Astraea/Flywheel\",\"Verdict\",\"FailureMode\",\"publishable\",{\"label\":\"publishable\",\"period\":3600,\"stat\":\"Sum\"}],[\"Astraea/Flywheel\",\"Verdict\",\"FailureMode\",\"unreconciled\",{\"label\":\"unreconciled\",\"period\":3600,\"stat\":\"Sum\"}],[\"Astraea/Flywheel\",\"Verdict\",\"FailureMode\",\"undetected_rollup\",{\"label\":\"undetected_rollup\",\"period\":3600,\"stat\":\"Sum\"}],[\"Astraea/Flywheel\",\"Verdict\",\"FailureMode\",\"duplicate_facts\",{\"label\":\"duplicate_facts\",\"period\":3600,\"stat\":\"Sum\"}],[\"Astraea/Flywheel\",\"Verdict\",\"FailureMode\",\"no_consolidated\",{\"label\":\"no_consolidated\",\"period\":3600,\"stat\":\"Sum\"}],[\"Astraea/Flywheel\",\"Verdict\",\"FailureMode\",\"no_segments\",{\"label\":\"no_segments\",\"period\":3600,\"stat\":\"Sum\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":12,\"height\":6,\"x\":12,\"y\":0,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Queue depth and poison messages\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/SQS\",\"ApproximateNumberOfMessagesVisible\",\"QueueName\",\"",
+       {
+        "Fn::GetAtt": [
+         "WorkQueue94013F35",
+         "QueueName"
+        ]
+       },
+       "\",{\"stat\":\"Maximum\"}],[\"AWS/SQS\",\"ApproximateNumberOfMessagesVisible\",\"QueueName\",\"",
+       {
+        "Fn::GetAtt": [
+         "WorkDlqEFF57BC6",
+         "QueueName"
+        ]
+       },
+       "\",{\"stat\":\"Maximum\",\"yAxis\":\"right\"}]],\"yAxis\":{}}}]}"
+      ]
+     ]
+    },
+    "DashboardName": "astraea-flywheel"
+   },
+   "Metadata": {
+    "aws:cdk:path": "AstraeaFlywheel/FlywheelDashboard/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/22PQVPDIBCFf0vvZLVp9d5a9aJjTbx3NoApDYGYhWY6DP/dgdSePL2P93bYtyWUjw9wv8CJCi66QqsGQu2QdwwnOgRxMdhb0UD4wkZL9vRtMkRGPwTh00ufzQyRadsShDfbvo7WDyn448g09o1ACC/ecKesSemNn8/SuNr6kct3HAZl2hT/7+7l2CsiZU1kCnsIlZ2bZd1brfglz2WKjFYHJJKOYJOE0Qq2nnfSbZEkk2kHQaj89ROfruPaejGh40cIG41jn6IZdkjHxuIoknV7xMgqSbkqy2tqh+218Id3g3eRGSsknOjuXK5huYbl4kRKFaM3TvUSqll/AXL4/EmSAQAA"
+   },
+   "Metadata": {
+    "aws:cdk:path": "AstraeaFlywheel/CDKMetadata/Default"
+   }
+  }
+ },
+ "Outputs": {
+  "WorkQueueUrl": {
+   "Value": {
+    "Ref": "WorkQueue94013F35"
+   }
+  },
+  "DeadLetterQueueUrl": {
+   "Value": {
+    "Ref": "WorkDlqEFF57BC6"
+   }
+  },
+  "ProposalsTableName": {
+   "Value": {
+    "Ref": "Proposals97FA2A39"
+   }
+  },
+  "PlannerFunctionName": {
+   "Value": {
+    "Ref": "PlannerD1424F44"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

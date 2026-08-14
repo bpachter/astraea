@@ -1,0 +1,356 @@
+{
+  "/AstraeaFlywheel": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (C:\\dev\\astraea\\flywheel\\bin\\flywheel.ts:7:1)",
+        "...node internals, ts-node, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/AstraeaFlywheel/WorkQueueUrl": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WorkQueueUrl"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new FlywheelStack (C:\\dev\\astraea\\flywheel\\lib\\flywheel-stack.ts:193:5)",
+        "<anonymous> (C:\\dev\\astraea\\flywheel\\bin\\flywheel.ts:7:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/AstraeaFlywheel/DeadLetterQueueUrl": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DeadLetterQueueUrl"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new FlywheelStack (C:\\dev\\astraea\\flywheel\\lib\\flywheel-stack.ts:194:5)",
+        "<anonymous> (C:\\dev\\astraea\\flywheel\\bin\\flywheel.ts:7:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/AstraeaFlywheel/ProposalsTableName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProposalsTableName"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new FlywheelStack (C:\\dev\\astraea\\flywheel\\lib\\flywheel-stack.ts:195:5)",
+        "<anonymous> (C:\\dev\\astraea\\flywheel\\bin\\flywheel.ts:7:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/AstraeaFlywheel/PlannerFunctionName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PlannerFunctionName"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new FlywheelStack (C:\\dev\\astraea\\flywheel\\lib\\flywheel-stack.ts:196:5)",
+        "<anonymous> (C:\\dev\\astraea\\flywheel\\bin\\flywheel.ts:7:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/AstraeaFlywheel/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/AstraeaFlywheel/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/AstraeaFlywheel/Proposals/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Proposals97FA2A39"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Table2 in aws-cdk-lib...",
+        "new FlywheelStack (C:\\dev\\astraea\\flywheel\\lib\\flywheel-stack.ts:39:23)",
+        "<anonymous> (C:\\dev\\astraea\\flywheel\\bin\\flywheel.ts:7:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/AstraeaFlywheel/WorkDlq/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WorkDlqEFF57BC6"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Queue2 in aws-cdk-lib...",
+        "new FlywheelStack (C:\\dev\\astraea\\flywheel\\lib\\flywheel-stack.ts:49:29)",
+        "<anonymous> (C:\\dev\\astraea\\flywheel\\bin\\flywheel.ts:7:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/AstraeaFlywheel/WorkQueue/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WorkQueue94013F35"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Queue2 in aws-cdk-lib...",
+        "new FlywheelStack (C:\\dev\\astraea\\flywheel\\lib\\flywheel-stack.ts:53:23)",
+        "<anonymous> (C:\\dev\\astraea\\flywheel\\bin\\flywheel.ts:7:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/AstraeaFlywheel/PlannerLogs/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PlannerLogsC228C63E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new LogGroup2 in aws-cdk-lib...",
+        "new FlywheelStack (C:\\dev\\astraea\\flywheel\\lib\\flywheel-stack.ts:63:25)",
+        "<anonymous> (C:\\dev\\astraea\\flywheel\\bin\\flywheel.ts:7:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/AstraeaFlywheel/Planner/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PlannerD1424F44"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Function2 in aws-cdk-lib...",
+        "new FlywheelStack (C:\\dev\\astraea\\flywheel\\lib\\flywheel-stack.ts:67:21)",
+        "<anonymous> (C:\\dev\\astraea\\flywheel\\bin\\flywheel.ts:7:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/AstraeaFlywheel/ExtractorLogs/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExtractorLogsB1DF279A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new LogGroup2 in aws-cdk-lib...",
+        "new FlywheelStack (C:\\dev\\astraea\\flywheel\\lib\\flywheel-stack.ts:77:27)",
+        "<anonymous> (C:\\dev\\astraea\\flywheel\\bin\\flywheel.ts:7:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/AstraeaFlywheel/Extractor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Extractor6B5FF8A9"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Function2 in aws-cdk-lib...",
+        "new FlywheelStack (C:\\dev\\astraea\\flywheel\\lib\\flywheel-stack.ts:81:23)",
+        "<anonymous> (C:\\dev\\astraea\\flywheel\\bin\\flywheel.ts:7:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/AstraeaFlywheel/DailySweep/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DailySweep631D8A0C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Rule2 in aws-cdk-lib...",
+        "new FlywheelStack (C:\\dev\\astraea\\flywheel\\lib\\flywheel-stack.ts:128:5)",
+        "<anonymous> (C:\\dev\\astraea\\flywheel\\bin\\flywheel.ts:7:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/AstraeaFlywheel/DailySweep/AllowEventRuleAstraeaFlywheelPlanner0F4C650C": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DailySweepAllowEventRuleAstraeaFlywheelPlanner0F4C650C7687FAF7"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Rule2 in aws-cdk-lib...",
+        "new FlywheelStack (C:\\dev\\astraea\\flywheel\\lib\\flywheel-stack.ts:128:5)",
+        "<anonymous> (C:\\dev\\astraea\\flywheel\\bin\\flywheel.ts:7:1)"
+      ]
+    }
+  ],
+  "/AstraeaFlywheel/PoisonMessagesAlarm/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PoisonMessagesAlarm6CAC4B66"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Alarm2 in aws-cdk-lib...",
+        "new FlywheelStack (C:\\dev\\astraea\\flywheel\\lib\\flywheel-stack.ts:137:5)",
+        "<anonymous> (C:\\dev\\astraea\\flywheel\\bin\\flywheel.ts:7:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/AstraeaFlywheel/ExtractorErrorsAlarm/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExtractorErrorsAlarmFB34235C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Alarm2 in aws-cdk-lib...",
+        "new FlywheelStack (C:\\dev\\astraea\\flywheel\\lib\\flywheel-stack.ts:148:5)",
+        "<anonymous> (C:\\dev\\astraea\\flywheel\\bin\\flywheel.ts:7:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/AstraeaFlywheel/FlywheelDashboard/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FlywheelDashboard43A63FF1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Dashboard2 in aws-cdk-lib...",
+        "new FlywheelStack (C:\\dev\\astraea\\flywheel\\lib\\flywheel-stack.ts:158:23)",
+        "<anonymous> (C:\\dev\\astraea\\flywheel\\bin\\flywheel.ts:7:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/AstraeaFlywheel/CDKMetadata/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CDKMetadata"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/AstraeaFlywheel/Planner/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PlannerServiceRole5F4B875C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Function2 in aws-cdk-lib...",
+        "new FlywheelStack (C:\\dev\\astraea\\flywheel\\lib\\flywheel-stack.ts:67:21)",
+        "<anonymous> (C:\\dev\\astraea\\flywheel\\bin\\flywheel.ts:7:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/AstraeaFlywheel/Extractor/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExtractorServiceRole18D46933"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Function2 in aws-cdk-lib...",
+        "new FlywheelStack (C:\\dev\\astraea\\flywheel\\lib\\flywheel-stack.ts:81:23)",
+        "<anonymous> (C:\\dev\\astraea\\flywheel\\bin\\flywheel.ts:7:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/AstraeaFlywheel/Extractor/SqsEventSource:AstraeaFlywheelWorkQueueD4C2F359/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExtractorSqsEventSourceAstraeaFlywheelWorkQueueD4C2F35941255BCB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...WrappedClass.addEventSource in aws-cdk-lib...",
+        "new FlywheelStack (C:\\dev\\astraea\\flywheel\\lib\\flywheel-stack.ts:118:15)",
+        "<anonymous> (C:\\dev\\astraea\\flywheel\\bin\\flywheel.ts:7:1)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/AstraeaFlywheel/Planner/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PlannerServiceRoleDefaultPolicy6808502C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/AstraeaFlywheel/Extractor/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExtractorServiceRoleDefaultPolicy9B8CA6B7"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ]
+}

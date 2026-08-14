@@ -1,0 +1,36 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "a31d64ea62c4f5cbf6862d95b848498feb67a351882a0d1a970676bae977b6df": {
+      "displayName": "Planner/Code",
+      "source": {
+        "path": "asset.a31d64ea62c4f5cbf6862d95b848498feb67a351882a0d1a970676bae977b6df",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "793140950071-us-east-2-e287f607": {
+          "bucketName": "cdk-hnb659fds-assets-793140950071-us-east-2",
+          "objectKey": "a31d64ea62c4f5cbf6862d95b848498feb67a351882a0d1a970676bae977b6df.zip",
+          "region": "us-east-2",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::793140950071:role/cdk-hnb659fds-file-publishing-role-793140950071-us-east-2"
+        }
+      }
+    },
+    "dc9e33b3612cdd6530a18415d0a2e2886f8ed06666bef5d15a560d92ea0d0899": {
+      "displayName": "AstraeaFlywheel Template",
+      "source": {
+        "path": "AstraeaFlywheel.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "793140950071-us-east-2-4474683d": {
+          "bucketName": "cdk-hnb659fds-assets-793140950071-us-east-2",
+          "objectKey": "dc9e33b3612cdd6530a18415d0a2e2886f8ed06666bef5d15a560d92ea0d0899.json",
+          "region": "us-east-2",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::793140950071:role/cdk-hnb659fds-file-publishing-role-793140950071-us-east-2"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

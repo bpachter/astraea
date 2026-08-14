@@ -95,14 +95,18 @@ function Write-JsonArg { param($Object)
   return $file.FullName
 }
 
-function New-SourceConfig { param([string]$Image, [int]$Port, [hashtable]$Env)
+function New-SourceConfig { param([string]$Image, [int]$Port, [hashtable]$Env, [hashtable]$Secrets)
+  $imageConfig = @{ Port = "$Port"; RuntimeEnvironmentVariables = $Env }
+  # Secrets are referenced by ARN, never by value: DescribeService then returns
+  # a pointer rather than the key Django signs sessions with.
+  if ($Secrets -and $Secrets.Count) { $imageConfig.RuntimeEnvironmentSecrets = $Secrets }
   Write-JsonArg @{
     AuthenticationConfiguration = @{ AccessRoleArn = $roleArn }
     AutoDeploymentsEnabled      = $false
     ImageRepository             = @{
       ImageIdentifier     = $Image
       ImageRepositoryType = "ECR"
-      ImageConfiguration  = @{ Port = "$Port"; RuntimeEnvironmentVariables = $Env }
+      ImageConfiguration  = $imageConfig
     }
   }
 }
@@ -110,7 +114,6 @@ function New-SourceConfig { param([string]$Image, [int]$Port, [hashtable]$Env)
 # Values like "0.25 vCPU" and "0.5 GB" contain spaces, which CLI shorthand
 # (Cpu=...,Memory=...) cannot survive once the command line is expanded.
 # Every structured argument goes in as JSON for exactly this reason.
-$instanceConfigFile = Write-JsonArg @{ Cpu = "0.25 vCPU"; Memory = "0.5 GB" }
 
 function Wait-Service { param([string]$Name)
   while ($true) {
@@ -125,13 +128,18 @@ function Wait-Service { param([string]$Name)
   }
 }
 
-function Deploy-Service { param([string]$Name, [string]$Image, [int]$Port, [string]$HealthPath, [hashtable]$Env)
-  $cfgFile = New-SourceConfig -Image $Image -Port $Port -Env $Env
+function Deploy-Service {
+  param([string]$Name, [string]$Image, [int]$Port, [string]$HealthPath,
+        [hashtable]$Env, [hashtable]$Secrets, [string]$InstanceRoleArn)
+  $cfgFile = New-SourceConfig -Image $Image -Port $Port -Env $Env -Secrets $Secrets
+  $instanceCfg = @{ Cpu = "0.25 vCPU"; Memory = "0.5 GB" }
+  if ($InstanceRoleArn) { $instanceCfg.InstanceRoleArn = $InstanceRoleArn }
+  $instanceFile = Write-JsonArg $instanceCfg
   $existing = Get-Service $Name
   if ($existing) {
     Write-Host "updating $Name"
     Invoke-Aws ("apprunner update-service --region $Region --service-arn $($existing.ServiceArn) " +
-      "--source-configuration file://$cfgFile") | Out-Null
+      "--source-configuration file://$cfgFile --instance-configuration file://$instanceFile") | Out-Null
     $null = Wait-Service $Name
     # update-service only redeploys when the configuration actually changed —
     # a moving :latest tag whose config is identical is a silent no-op, and the
@@ -143,7 +151,7 @@ function Deploy-Service { param([string]$Name, [string]$Image, [int]$Port, [stri
     Write-Host "creating $Name"
     Invoke-Aws ("apprunner create-service --service-name $Name --region $Region " +
       "--source-configuration file://$cfgFile " +
-      "--instance-configuration file://$instanceConfigFile " +
+      "--instance-configuration file://$instanceFile " +
       "--health-check-configuration Protocol=HTTP,Path=$HealthPath,Interval=10,Timeout=5,HealthyThreshold=1,UnhealthyThreshold=5") | Out-Null
     if ($LASTEXITCODE -ne 0) { throw "create-service failed for $Name (see the CLI error above)" }
   }
@@ -158,15 +166,36 @@ $gateUrl = "https://$($gate.ServiceUrl)"
 Write-Host "gate: $gateUrl"
 
 # ---- 4. Portal, wired to the gate -----------------------------------------
-Write-Step "Portal service"
-$secret = -join ((1..50) | ForEach-Object { [char](Get-Random -InputObject (48..57 + 65..90 + 97..122)) })
-$portalEnv = @{
-  ASTRAEA_GATE_URL  = $gateUrl
-  DJANGO_DEBUG      = "0"
-  DJANGO_SECRET_KEY = $secret
+Write-Step "Django secret in Secrets Manager"
+$secretName = "$App/portal/django-secret-key"
+if (-not (Test-AwsOk "secretsmanager describe-secret --secret-id $secretName --region $Region")) {
+  $generated = -join ((1..64) | ForEach-Object { [char](Get-Random -InputObject (48..57 + 65..90 + 97..122)) })
+  Invoke-Aws "secretsmanager create-secret --name $secretName --secret-string $generated --region $Region --description 'Django SECRET_KEY for the Astraea portal'" | Out-Null
+  Write-Host "created secret $secretName"
+} else { Write-Host "secret $secretName already present" }
+$secretArn = (Invoke-Aws "secretsmanager get-secret-value --secret-id $secretName --region $Region --query ARN --output text").Trim()
+
+# App Runner needs an INSTANCE role (distinct from the ECR access role, which is
+# a build-time identity) to read the secret at runtime.
+$instanceRoleName = "$App-apprunner-instance"
+if (-not (Test-AwsOk "iam get-role --role-name $instanceRoleName")) {
+  $instTrust = '{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Principal":{"Service":"tasks.apprunner.amazonaws.com"},"Action":"sts:AssumeRole"}]}'
+  $f = New-TemporaryFile; $instTrust | Set-Content $f -Encoding ascii
+  Invoke-Aws "iam create-role --role-name $instanceRoleName --assume-role-policy-document file://$($f.FullName)" | Out-Null
+  Write-Host "created role $instanceRoleName"; Start-Sleep 12
 }
+$instPolicy = Write-JsonArg @{
+  Version   = "2012-10-17"
+  Statement = @(@{ Effect = "Allow"; Action = "secretsmanager:GetSecretValue"; Resource = $secretArn })
+}
+Invoke-Aws "iam put-role-policy --role-name $instanceRoleName --policy-name read-django-secret --policy-document file://$instPolicy" | Out-Null
+$instanceRoleArn = (Invoke-Aws "iam get-role --role-name $instanceRoleName --query Role.Arn --output text").Trim()
+
+Write-Step "Portal service"
+$portalEnv = @{ ASTRAEA_GATE_URL = $gateUrl; DJANGO_DEBUG = "0" }
+$portalSecrets = @{ DJANGO_SECRET_KEY = $secretArn }
 $portal = Deploy-Service -Name "$App-portal" -Image "$registry/$App-portal:latest" -Port 8000 `
-  -HealthPath "/admin/login/" -Env $portalEnv
+  -HealthPath "/admin/login/" -Env $portalEnv -Secrets $portalSecrets -InstanceRoleArn $instanceRoleArn
 $portalUrl = "https://$($portal.ServiceUrl)"
 Write-Host "portal: $portalUrl"
 
@@ -176,7 +205,7 @@ Write-Step "Cross-wiring hostnames"
 $portalEnv["DJANGO_ALLOWED_HOSTS"] = $portal.ServiceUrl
 $portalEnv["DJANGO_CSRF_TRUSTED_ORIGINS"] = $portalUrl
 $null = Deploy-Service -Name "$App-portal" -Image "$registry/$App-portal:latest" -Port 8000 `
-  -HealthPath "/admin/login/" -Env $portalEnv
+  -HealthPath "/admin/login/" -Env $portalEnv -Secrets $portalSecrets -InstanceRoleArn $instanceRoleArn
 # The portal calls the gate server-side, but the published static app calls it
 # from the browser — so the GitHub Pages origin must be trusted too, or the
 # START view's live status probe is blocked by CORS.
