@@ -1,7 +1,33 @@
 using System.Text.Json;
 using Astraea.Gate;
+using OpenTelemetry.Contrib.Extensions.AWSXRay.Trace;
+using OpenTelemetry;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// ---- tracing ---------------------------------------------------------------
+// App Runner runs an OpenTelemetry collector beside this container and forwards
+// to X-Ray, so the app exports OTLP to localhost and needs no AWS credentials
+// of its own. Off unless OTEL_EXPORTER_OTLP_ENDPOINT is set, which keeps local
+// runs and the test suite free of an exporter that has nowhere to send.
+if (!string.IsNullOrEmpty(builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]))
+{
+    builder.Services.AddOpenTelemetry()
+        .WithTracing(tracing => tracing
+            // X-Ray requires trace ids whose high bits are the epoch second,
+            // and the portal propagates context in the X-Amzn-Trace-Id header —
+            // without both, the two services produce unrelated traces instead
+            // of one story.
+            .AddXRayTraceId()
+            .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("astraea-gate"))
+            .AddAspNetCoreInstrumentation(options =>
+                // Health checks are noise: App Runner probes /healthz every 10s.
+                options.Filter = context => context.Request.Path != "/healthz")
+            .AddOtlpExporter());
+    Sdk.SetDefaultTextMapPropagator(new AWSXRayPropagator());
+}
 
 builder.Services.ConfigureHttpJsonOptions(options =>
 {

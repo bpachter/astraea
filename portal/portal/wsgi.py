@@ -13,4 +13,10 @@ from django.core.wsgi import get_wsgi_application
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "portal.settings")
 
+# Instrument before the application object exists: Django's instrumentation
+# wraps middleware at import time.
+from portal.tracing import configure as configure_tracing  # noqa: E402
+
+configure_tracing()
+
 application = get_wsgi_application()

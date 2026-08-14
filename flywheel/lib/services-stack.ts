@@ -1,5 +1,6 @@
 import * as cdk from "aws-cdk-lib";
 import * as apprunner from "aws-cdk-lib/aws-apprunner";
+import * as iam from "aws-cdk-lib/aws-iam";
 import type { Construct } from "constructs";
 
 export interface ServicesStackProps extends cdk.StackProps {
@@ -38,6 +39,36 @@ export class ServicesStack extends cdk.Stack {
 
     const registry = `${this.account}.dkr.ecr.${this.region}.amazonaws.com`;
 
+    // ---- tracing ---------------------------------------------------------
+    // Attaching this runs an OpenTelemetry collector beside each container:
+    // the apps export OTLP to localhost and App Runner forwards to X-Ray, so
+    // nothing in the image needs AWS credentials or a daemon of its own.
+    const tracing = new apprunner.CfnObservabilityConfiguration(this, "Tracing", {
+      observabilityConfigurationName: "astraea-xray",
+      traceConfiguration: { vendor: "AWSXRAY" },
+    });
+
+    // The collector publishes segments using the service's INSTANCE role, so
+    // each service needs one that can write to X-Ray.
+    const xray = iam.ManagedPolicy.fromAwsManagedPolicyName("AWSXRayDaemonWriteAccess");
+
+    const gateInstanceRole = new iam.Role(this, "GateInstanceRole", {
+      assumedBy: new iam.ServicePrincipal("tasks.apprunner.amazonaws.com"),
+      description: "Astraea gate runtime identity: X-Ray write only",
+      managedPolicies: [xray],
+    });
+
+    // The portal already has an instance role (it reads the Django secret);
+    // import it mutably and add tracing rather than replacing it.
+    iam.Role.fromRoleArn(this, "PortalInstanceRole", props.instanceRoleArn, {
+      mutable: true,
+    }).addManagedPolicy(xray);
+
+    const observability = {
+      observabilityEnabled: true,
+      observabilityConfigurationArn: tracing.attrObservabilityConfigurationArn,
+    };
+
     const gate = new apprunner.CfnService(this, "GateService", {
       serviceName: "astraea-gate",
       sourceConfiguration: {
@@ -50,6 +81,9 @@ export class ServicesStack extends cdk.Stack {
             port: "8080",
             runtimeEnvironmentVariables: [
               { name: "AtlasDir", value: "/app/atlas" },
+              // Presence of this endpoint is what enables tracing in the app;
+              // 4317 is where App Runner's sidecar collector listens.
+              { name: "OTEL_EXPORTER_OTLP_ENDPOINT", value: "http://localhost:4317" },
               // Server-side callers and the published static app, in the
               // order the gate's configuration parser expects.
               { name: "PortalOrigins", value: props.gateCorsOrigins.join(";") },
@@ -57,7 +91,8 @@ export class ServicesStack extends cdk.Stack {
           },
         },
       },
-      instanceConfiguration: { cpu: "256", memory: "512" },
+      instanceConfiguration: { cpu: "256", memory: "512", instanceRoleArn: gateInstanceRole.roleArn },
+      observabilityConfiguration: observability,
       healthCheckConfiguration: {
         protocol: "HTTP",
         path: "/healthz",
@@ -82,6 +117,7 @@ export class ServicesStack extends cdk.Stack {
             runtimeEnvironmentVariables: [
               { name: "ASTRAEA_GATE_URL", value: props.gateUrl },
               { name: "DJANGO_DEBUG", value: "0" },
+              { name: "OTEL_EXPORTER_OTLP_ENDPOINT", value: "http://localhost:4317" },
               // Django answers 400 to any Host it was not told about, so the
               // custom domain must be listed before DNS points at it.
               { name: "DJANGO_ALLOWED_HOSTS", value: props.portalHosts.join(",") },
@@ -104,6 +140,7 @@ export class ServicesStack extends cdk.Stack {
         memory: "512",
         instanceRoleArn: props.instanceRoleArn,
       },
+      observabilityConfiguration: observability,
       healthCheckConfiguration: {
         protocol: "HTTP",
         path: "/admin/login/",
