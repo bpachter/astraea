@@ -2,31 +2,6 @@
   "Version": "2012-10-17",
   "Statement": [
     {
-      "Sid": "EcrLoginIsAccountWide",
-      "Effect": "Allow",
-      "Action": "ecr:GetAuthorizationToken",
-      "Resource": "*"
-    },
-    {
-      "Sid": "PushOnlyToAstraeaRepositories",
-      "Effect": "Allow",
-      "Action": [
-        "ecr:BatchCheckLayerAvailability",
-        "ecr:InitiateLayerUpload",
-        "ecr:UploadLayerPart",
-        "ecr:CompleteLayerUpload",
-        "ecr:PutImage",
-        "ecr:BatchGetImage",
-        "ecr:GetDownloadUrlForLayer",
-        "ecr:DescribeRepositories",
-        "ecr:DescribeImages"
-      ],
-      "Resource": [
-        "arn:aws:ecr:us-east-2:793140950071:repository/astraea-gate",
-        "arn:aws:ecr:us-east-2:793140950071:repository/astraea-portal"
-      ]
-    },
-    {
       "Sid": "ListingServicesHasNoResourceScope",
       "Effect": "Allow",
       "Action": "apprunner:ListServices",
@@ -35,25 +10,11 @@
     {
       "Sid": "DeployOnlyTheseTwoServices",
       "Effect": "Allow",
-      "Action": [
-        "apprunner:DescribeService",
-        "apprunner:UpdateService",
-        "apprunner:StartDeployment",
-        "apprunner:ListOperations"
-      ],
+      "Action": ["apprunner:StartDeployment", "apprunner:ListOperations"],
       "Resource": [
         "arn:aws:apprunner:us-east-2:793140950071:service/astraea-gate/*",
         "arn:aws:apprunner:us-east-2:793140950071:service/astraea-portal/*"
       ]
-    },
-    {
-      "Sid": "UpdateServiceMustPassTheEcrAccessRole",
-      "Effect": "Allow",
-      "Action": "iam:PassRole",
-      "Resource": "arn:aws:iam::793140950071:role/astraea-apprunner-ecr-access",
-      "Condition": {
-        "StringEquals": { "iam:PassedToService": "build.apprunner.amazonaws.com" }
-      }
     },
     {
       "Sid": "SyncOnlyTheReconBucket",

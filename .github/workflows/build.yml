@@ -1,9 +1,20 @@
 # Build, test, publish, and deploy Astraea.
 #
-# Tests gate the images; images publish to both GitHub Container Registry and
-# ECR; a final job deploys the two App Runner services and syncs the static
-# app to S3. AWS access is an OIDC-federated role assumed per job — there is
-# no long-lived AWS key in this repository or in GitHub secrets.
+# Security posture, after an adversarial review of the first version:
+#
+#  * `id-token: write` is granted per job, never workflow-wide. GitHub's OIDC
+#    subject has no job component, so a token minted anywhere in a main-branch
+#    run satisfies the trust policy — a job that runs `npm ci` must therefore
+#    not be able to mint one at all.
+#  * Two roles, not one. Build jobs (which execute third-party dependency code)
+#    can only push to the two ECR repositories. The deploy job — which installs
+#    nothing — is the only identity that can touch App Runner or S3.
+#  * The deploy role cannot call UpdateService: that API rewrites a service's
+#    whole source configuration, so it could point production at an arbitrary
+#    public image and bypass the ECR scoping entirely. It gets StartDeployment,
+#    which can only redeploy the image already configured.
+#  * Every action is pinned to an immutable commit SHA. A version tag is a
+#    movable ref, and these jobs hold credentials.
 name: build
 
 on:
@@ -11,37 +22,45 @@ on:
     branches: [main]
   workflow_dispatch:
 
+# Deliberately minimal at workflow scope; jobs opt in to what they need.
 permissions:
   contents: read
-  packages: write
-  id-token: write # required to request the OIDC token
+
+concurrency:
+  group: astraea-deploy
+  cancel-in-progress: false
 
 env:
   AWS_REGION: us-east-2
-  AWS_ROLE: arn:aws:iam::793140950071:role/astraea-github-deploy
+  BUILD_ROLE: arn:aws:iam::793140950071:role/astraea-github-build
+  DEPLOY_ROLE: arn:aws:iam::793140950071:role/astraea-github-deploy
   ECR_REGISTRY: 793140950071.dkr.ecr.us-east-2.amazonaws.com
+  RECON_BUCKET: astraea-recon-793140950071
 
 jobs:
   gate:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4
         with:
           dotnet-version: 8.0.x
       - name: Test
         run: dotnet test gate/Astraea.sln --nologo
-      - name: Log in to ghcr
-        uses: docker/login-action@v3
+      - uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - uses: aws-actions/configure-aws-credentials@v4
+      - uses: aws-actions/configure-aws-credentials@7474bc4690e29a8392af63c5b98e7449536d5c3a # v4
         with:
-          role-to-assume: ${{ env.AWS_ROLE }}
+          role-to-assume: ${{ env.BUILD_ROLE }}
           aws-region: ${{ env.AWS_REGION }}
-      - uses: aws-actions/amazon-ecr-login@v2
+      - uses: aws-actions/amazon-ecr-login@d539f0932e70871a027e9d5a9d8fc38589180a64 # v2
       - name: Build and push
         run: |
           docker build -f gate/Dockerfile \
@@ -54,9 +73,13 @@ jobs:
 
   portal:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: "3.12"
       - name: Test
@@ -64,17 +87,16 @@ jobs:
         run: |
           pip install -r requirements.txt
           python manage.py test adjudication
-      - name: Log in to ghcr
-        uses: docker/login-action@v3
+      - uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - uses: aws-actions/configure-aws-credentials@v4
+      - uses: aws-actions/configure-aws-credentials@7474bc4690e29a8392af63c5b98e7449536d5c3a # v4
         with:
-          role-to-assume: ${{ env.AWS_ROLE }}
+          role-to-assume: ${{ env.BUILD_ROLE }}
           aws-region: ${{ env.AWS_REGION }}
-      - uses: aws-actions/amazon-ecr-login@v2
+      - uses: aws-actions/amazon-ecr-login@d539f0932e70871a027e9d5a9d8fc38589180a64 # v2
       - name: Build and push
         run: |
           docker build -f portal/Dockerfile \
@@ -87,9 +109,12 @@ jobs:
 
   recon:
     runs-on: ubuntu-latest
+    # No AWS access and no token minting: this job runs `npm ci`.
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 20
       - name: Typecheck and build
@@ -97,7 +122,7 @@ jobs:
         run: |
           npm ci
           npm run build
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: recon-dist
           path: recon/dist
@@ -105,51 +130,61 @@ jobs:
   deploy:
     needs: [gate, portal, recon]
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     steps:
-      - uses: aws-actions/configure-aws-credentials@v4
+      - uses: aws-actions/configure-aws-credentials@7474bc4690e29a8392af63c5b98e7449536d5c3a # v4
         with:
-          role-to-assume: ${{ env.AWS_ROLE }}
+          role-to-assume: ${{ env.DEPLOY_ROLE }}
           aws-region: ${{ env.AWS_REGION }}
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: recon-dist
           path: dist
       - name: Sync the static app to S3
-        run: aws s3 sync dist s3://astraea-recon-793140950071 --delete
-      - name: Deploy both services
+        run: aws s3 sync dist "s3://$RECON_BUCKET" --delete
+
+      - name: Deploy both services and wait on each operation
         run: |
           set -euo pipefail
-          # start-deployment forces a fresh pull of :latest. update-service
-          # would be a no-op here: the configuration has not changed, only the
-          # image behind the tag.
+          # Poll the specific operation, not a fleet-wide status string: a
+          # service that fails and rolls back returns to RUNNING, so watching
+          # status alone lets a broken deploy pass as green.
           for svc in astraea-gate astraea-portal; do
             arn=$(aws apprunner list-services --region "$AWS_REGION" \
               --query "ServiceSummaryList[?ServiceName=='$svc'].ServiceArn" --output text)
-            aws apprunner start-deployment --service-arn "$arn" --region "$AWS_REGION" >/dev/null
-            echo "deploying $svc"
+            op=$(aws apprunner start-deployment --service-arn "$arn" \
+              --region "$AWS_REGION" --query OperationId --output text)
+            echo "$svc: operation $op"
+            for _ in $(seq 1 60); do
+              status=$(aws apprunner list-operations --service-arn "$arn" --region "$AWS_REGION" \
+                --query "OperationSummaryList[?Id=='$op'].Status" --output text)
+              case "$status" in
+                SUCCEEDED) echo "$svc: succeeded"; break ;;
+                FAILED|ROLLBACK_SUCCEEDED|ROLLBACK_FAILED)
+                  echo "::error::$svc deployment $status"; exit 1 ;;
+                *) sleep 20 ;;
+              esac
+            done
+            [ "$status" = "SUCCEEDED" ] || { echo "::error::$svc timed out ($status)"; exit 1; }
           done
-      - name: Wait for both services to report RUNNING
+
+      - name: Smoke-test the live deployment
         run: |
           set -euo pipefail
-          for attempt in $(seq 1 40); do
-            statuses=$(aws apprunner list-services --region "$AWS_REGION" \
-              --query "ServiceSummaryList[?starts_with(ServiceName, 'astraea-')].Status" --output text)
-            echo "attempt $attempt: $statuses"
-            case "$statuses" in
-              *FAILED*) echo "::error::a service entered a failed state"; exit 1 ;;
-            esac
-            if [ "$statuses" = "RUNNING	RUNNING" ] || [ "$statuses" = "RUNNING RUNNING" ]; then
-              echo "both services RUNNING"; exit 0
-            fi
-            sleep 30
-          done
-          echo "::error::timed out waiting for services"; exit 1
-      - name: Smoke-test the deployment
-        run: |
-          set -euo pipefail
-          gate=https://wmc38pwmtw.us-east-2.awsapprunner.com
-          portal=https://zsc9c6t7g3.us-east-2.awsapprunner.com
-          curl -fsS "$gate/healthz" | grep -q '"status":"ok"'
-          curl -fsS "$gate/api/v1/nodes?pageSize=1" | grep -q '"total_items"'
-          curl -fsS -o /dev/null -w '%{http_code}\n' "$portal/admin/login/" | grep -q 200
-          echo "smoke tests passed"
+          host() {
+            aws apprunner list-services --region "$AWS_REGION" \
+              --query "ServiceSummaryList[?ServiceName=='$1'].ServiceUrl" --output text
+          }
+          gate="https://$(host astraea-gate)"
+          portal="https://$(host astraea-portal)"
+          # Capture then match: piping curl into grep -q under pipefail turns a
+          # passing test into a SIGPIPE failure.
+          body=$(curl -fsS "$gate/healthz")
+          case "$body" in *'"status":"ok"'*) ;; *) echo "::error::gate unhealthy: $body"; exit 1 ;; esac
+          nodes=$(curl -fsS "$gate/api/v1/nodes?pageSize=1")
+          case "$nodes" in *'"total_items"'*) ;; *) echo "::error::lookup API broken"; exit 1 ;; esac
+          code=$(curl -sS -o /dev/null -w '%{http_code}' "$portal/admin/login/")
+          [ "$code" = "200" ] || { echo "::error::portal returned $code"; exit 1; }
+          echo "smoke tests passed against $gate and $portal"

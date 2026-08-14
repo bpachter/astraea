@@ -1,0 +1,26 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "EcrLoginIsAccountWide",
+      "Effect": "Allow",
+      "Action": "ecr:GetAuthorizationToken",
+      "Resource": "*"
+    },
+    {
+      "Sid": "PushOnlyToAstraeaRepositories",
+      "Effect": "Allow",
+      "Action": [
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:InitiateLayerUpload",
+        "ecr:UploadLayerPart",
+        "ecr:CompleteLayerUpload",
+        "ecr:PutImage"
+      ],
+      "Resource": [
+        "arn:aws:ecr:us-east-2:793140950071:repository/astraea-gate",
+        "arn:aws:ecr:us-east-2:793140950071:repository/astraea-portal"
+      ]
+    }
+  ]
+}
