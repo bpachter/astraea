@@ -76,6 +76,15 @@ Two failures the deployment found that no local test could:
    forwards plain HTTP, so Django built an `http://` origin and rejected real
    `https://` logins. Fixed with `SECURE_PROXY_SSL_HEADER` (plus secure cookies)
    whenever `DEBUG` is off — a bug that only exists behind a proxy.
+3. **`update-service` is a no-op when nothing in the config changed**, so a
+   freshly pushed `:latest` image kept serving the previous build and the fix
+   above appeared not to work. The script now follows every update with an
+   explicit `start-deployment` to force the pull. (Immutable per-build tags
+   would remove the ambiguity entirely — a worthwhile Phase 3 change.)
+4. **CORS for the published app.** The static site calls the gate from
+   `https://bpachter.github.io`, a different origin, so that host is now in the
+   gate's allow-list alongside the portal — verified allowed, and verified that
+   an arbitrary origin still is not.
 
 CloudFront remains the scripted follow-up, after the domain/cert decision.
 

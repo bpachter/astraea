@@ -132,6 +132,13 @@ function Deploy-Service { param([string]$Name, [string]$Image, [int]$Port, [stri
     Write-Host "updating $Name"
     Invoke-Aws ("apprunner update-service --region $Region --service-arn $($existing.ServiceArn) " +
       "--source-configuration file://$cfgFile") | Out-Null
+    $null = Wait-Service $Name
+    # update-service only redeploys when the configuration actually changed —
+    # a moving :latest tag whose config is identical is a silent no-op, and the
+    # service keeps serving the previous image. Force the pull explicitly.
+    Write-Host "forcing image pull for $Name"
+    Invoke-Aws ("apprunner start-deployment --region $Region " +
+      "--service-arn $($existing.ServiceArn)") | Out-Null
   } else {
     Write-Host "creating $Name"
     Invoke-Aws ("apprunner create-service --service-name $Name --region $Region " +
