@@ -1,0 +1,15 @@
+{% extends "admin/login.html" %}
+
+{# A public demo whose credentials are a secret helps nobody: the database
+   behind this login is seeded public data, rebuilt on every deploy. Show the
+   credentials instead of making a visitor hunt for them. Overrides the admin's
+   own template via TEMPLATES["DIRS"], which outranks app template directories. #}
+{% block content %}
+<p style="padding:10px 14px;margin:0 0 16px;border-left:3px solid #5980a6;
+          background:rgba(89,128,166,.12);font-size:13px;line-height:1.5">
+  <b>Public demo.</b> Sign in as <code>demo</code> / <code>astraea-demo</code>.<br>
+  The data is seeded and resets on every deploy — approve, reject, and re-run
+  the gate freely.
+</p>
+{{ block.super }}
+{% endblock %}

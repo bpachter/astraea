@@ -170,8 +170,12 @@ $portalEnv["DJANGO_ALLOWED_HOSTS"] = $portal.ServiceUrl
 $portalEnv["DJANGO_CSRF_TRUSTED_ORIGINS"] = $portalUrl
 $null = Deploy-Service -Name "$App-portal" -Image "$registry/$App-portal:latest" -Port 8000 `
   -HealthPath "/admin/login/" -Env $portalEnv
+# The portal calls the gate server-side, but the published static app calls it
+# from the browser — so the GitHub Pages origin must be trusted too, or the
+# START view's live status probe is blocked by CORS.
+$gateOrigins = "$portalUrl;https://bpachter.github.io"
 $null = Deploy-Service -Name "$App-gate" -Image "$registry/$App-gate:latest" -Port 8080 `
-  -HealthPath "/healthz" -Env @{ AtlasDir = "/app/atlas"; PortalOrigins = $portalUrl }
+  -HealthPath "/healthz" -Env @{ AtlasDir = "/app/atlas"; PortalOrigins = $gateOrigins }
 
 # ---- 5. Recon static site --------------------------------------------------
 Write-Step "Recon static site"

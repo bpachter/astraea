@@ -30,6 +30,9 @@ export function Header({
     <header className="mr-header">
       <div className="mr-brand">{title.toUpperCase().replace(" ARCHITECTURE", " · ARCHITECTURE")}</div>
       <nav className="mr-views" aria-label="View">
+        <button className={view === "overview" ? "active" : ""} onClick={() => onView("overview")}>
+          START
+        </button>
         <button className={view === "graph" ? "active" : ""} onClick={() => onView("graph")}>
           RECON
         </button>

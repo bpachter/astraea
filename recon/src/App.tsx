@@ -10,12 +10,13 @@ import {
   Thesis,
 } from "./components";
 import { LockGate } from "./LockGate";
+import { Overview } from "./Overview";
 import { Primer } from "./Primer";
 import type { EdgeFamily, NodeClass, ReconGraph, ThemeName } from "./types";
 
 const Atlas = lazy(() => import("./Atlas"));
 
-export type View = "graph" | "primer" | "atlas";
+export type View = "overview" | "graph" | "primer" | "atlas";
 
 export interface Palette {
   classColor: (key: string) => string;
@@ -43,7 +44,7 @@ export default function App() {
   const [graph, setGraph] = useState<ReconGraph | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useState<string>("");
-  const [view, setView] = useState<View>("graph");
+  const [view, setView] = useState<View>("overview");
   const [theme, setTheme] = useState<ThemeName>(
     () => (localStorage.getItem("mr-theme") as ThemeName) || "light",
   );
@@ -122,7 +123,9 @@ export default function App() {
         onView={setView}
       />
       <div className="mr-container">
-        {view === "graph" ? (
+        {view === "overview" ? (
+          <Overview onView={setView} />
+        ) : view === "graph" ? (
           <LockGate>
             <Intro graph={graph} palette={palette} theme={theme} />
             <div className="mr-split">
