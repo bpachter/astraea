@@ -7,8 +7,9 @@ obj/
 # Node / recon viewer
 node_modules/
 recon/dist/
-# The Metabolon graph instance is interview prep, not portfolio content.
-recon/public/graphs/metabolon.json
+# Private graph instances (interview prep, client work) — served in dev by
+# the vite private-graphs middleware, never present in builds.
+recon/graphs-local/
 
 # Python
 __pycache__/

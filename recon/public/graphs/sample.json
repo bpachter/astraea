@@ -7,7 +7,9 @@
       "PUB": "Verified live against real data",
       "INF": "Design intent — not yet built"
     },
-    "disclaimer": "Self-portrait of the Astraea repo; the sample data that ships publicly."
+    "disclaimer": "Self-portrait of the Astraea repo; the sample data that ships publicly.",
+    "kicker": "KNOWLEDGE-GRAPH RECON — A SYSTEM MAPPED IN ITS OWN CONTRACT",
+    "headline": "The gate, drawn by itself"
   },
   "themes": {
     "light": {

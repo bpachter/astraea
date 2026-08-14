@@ -85,9 +85,9 @@ export function Intro({
   return (
     <section>
       <div className="mr-kicker">
-        KNOWLEDGE-GRAPH RECON — JOB DESCRIPTION + PUBLIC SOURCES ONLY
+        {graph.meta.kicker ?? "KNOWLEDGE-GRAPH RECON — JOB DESCRIPTION + PUBLIC SOURCES ONLY"}
       </div>
-      <h1 className="mr-h1">The platform behind the job</h1>
+      <h1 className="mr-h1">{graph.meta.headline ?? "The platform behind the job"}</h1>
       <p className="mr-lede">{graph.meta.purpose}</p>
       <div className="mr-legend-row">
         <span className="mr-legend-item">

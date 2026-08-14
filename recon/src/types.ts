@@ -97,6 +97,9 @@ export interface ReconGraph {
     purpose: string;
     confidenceLegend: Record<Confidence, string>;
     disclaimer: string;
+    /** Intro overrides; instances without them get the interview-recon defaults. */
+    kicker?: string;
+    headline?: string;
   };
   themes: { light: ThemeValues; dark: ThemeValues };
   nodeClasses: NodeClass[];
