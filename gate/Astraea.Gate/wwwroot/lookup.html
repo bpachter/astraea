@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Astraea — Node Lookup</title>
+<style>
+  :root {
+    --bg: #14171a; --text: #e6e9ec; --divider: rgba(230,233,236,0.2);
+    --accent: #5980a6; --accent-text: #b5d9fd; --muted: #9aa0a7; --tint: #1d2d3d;
+    --gene: #b3a4ee; --reaction: #8fbde8; --metabolite: #79cac2;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body { background: var(--bg); color: var(--text); font: 14px/1.5 system-ui, sans-serif; padding: 26px; }
+  h1 { font-size: 26px; font-weight: 600; letter-spacing: -0.01em; }
+  .kicker { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent-text); }
+  .sub { color: var(--muted); font-size: 12.5px; margin: 6px 0 18px; max-width: 720px; }
+  form { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; margin-bottom: 16px; }
+  label { display: flex; flex-direction: column; gap: 4px; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+  input, select { background: var(--bg); color: var(--text); border: 1px solid var(--divider); padding: 7px 10px; font-size: 13px; }
+  input[type="search"] { width: 300px; }
+  button { background: transparent; color: var(--accent-text); border: 1px solid var(--divider); padding: 7px 16px; font-size: 12px; letter-spacing: 0.08em; cursor: pointer; }
+  button:hover { background: var(--tint); }
+  button:disabled { opacity: 0.4; cursor: default; }
+  .layout { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 22px; align-items: start; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); padding: 7px 9px; border-bottom: 1px solid var(--divider); }
+  td { padding: 7px 9px; border-bottom: 1px solid rgba(230,233,236,0.08); }
+  tr[data-id] { cursor: pointer; }
+  tr[data-id]:hover, tr.active { background: var(--tint); }
+  .chip { font-size: 9.5px; font-weight: 700; letter-spacing: 0.08em; padding: 1px 7px; border: 1px solid currentColor; text-transform: uppercase; }
+  .chip.gene { color: var(--gene); } .chip.reaction { color: var(--reaction); } .chip.metabolite { color: var(--metabolite); }
+  .meta { color: var(--muted); font-size: 11.5px; }
+  .pager { display: flex; gap: 10px; align-items: center; margin-top: 12px; font-size: 12px; color: var(--muted); }
+  .detail { border: 1px solid var(--divider); padding: 16px 18px; position: sticky; top: 18px; }
+  .detail h2 { font-size: 19px; margin: 6px 0 2px; }
+  .detail .id { font-size: 12px; color: var(--muted); }
+  .detail h3 { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent-text); margin: 14px 0 6px; border-top: 1px solid var(--divider); padding-top: 10px; }
+  .detail pre { font-size: 11px; overflow-x: auto; color: var(--muted); }
+  .detail ul { padding-left: 18px; font-size: 12.5px; }
+  .status { color: var(--muted); font-size: 12px; margin-top: 10px; }
+  a { color: var(--accent-text); }
+</style>
+</head>
+<body>
+<div class="kicker">ASTRAEA — TRADITIONAL LOOKUP</div>
+<h1>Atlas node lookup</h1>
+<p class="sub">
+  Versioned, paged search over every gene, reaction, and metabolite in the Human-GEM
+  atlas — the classic Web API surface (<code>/api/v1/nodes?query=&amp;kind=&amp;page=&amp;pageSize=</code>)
+  beside the 3D view. Click a row for the full record.
+</p>
+
+<form id="controls">
+  <label>QUERY<input type="search" id="q" placeholder="hexokinase, ENSG…, glucose"></label>
+  <label>KIND
+    <select id="kind">
+      <option value="">all kinds</option>
+      <option value="gene">gene</option>
+      <option value="reaction">reaction</option>
+      <option value="metabolite">metabolite</option>
+    </select>
+  </label>
+  <label>PAGE SIZE
+    <select id="size"><option>25</option><option>50</option><option>100</option></select>
+  </label>
+  <button type="submit">SEARCH</button>
+</form>
+
+<div class="layout">
+  <div>
+    <table>
+      <thead><tr><th style="width:110px">Kind</th><th>Label</th><th style="width:130px">Id</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <div class="pager">
+      <button id="prev" type="button">← PREV</button>
+      <span id="pageinfo"></span>
+      <button id="next" type="button">NEXT →</button>
+      <span id="total"></span>
+    </div>
+    <div class="status" id="status"></div>
+  </div>
+  <aside class="detail" id="detail"><p class="meta">Select a node.</p></aside>
+</div>
+
+<script>
+  let page = 1;
+  const $ = (id) => document.getElementById(id);
+  const state = () => ({ q: $("q").value.trim(), kind: $("kind").value, size: +$("size").value });
+
+  async function load() {
+    const { q, kind, size } = state();
+    const params = new URLSearchParams({ page, pageSize: size });
+    if (q) params.set("query", q);
+    if (kind) params.set("kind", kind);
+    $("status").textContent = "loading…";
+    try {
+      const res = await fetch(`/api/v1/nodes?${params}`);
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        $("status").textContent = body.error ?? `HTTP ${res.status}`;
+        $("rows").innerHTML = "";
+        return;
+      }
+      const data = await res.json();
+      $("rows").innerHTML = data.items.map((e) => `
+        <tr data-id="${e.id}">
+          <td><span class="chip ${e.kind}">${e.kind}</span></td>
+          <td>${e.label}</td>
+          <td class="meta">${e.id}</td>
+        </tr>`).join("");
+      $("pageinfo").textContent = `page ${data.page} of ${data.total_pages}`;
+      $("total").textContent = `${data.total_items.toLocaleString()} nodes`;
+      $("prev").disabled = data.page <= 1;
+      $("next").disabled = data.page >= data.total_pages;
+      $("status").textContent = "";
+      [...$("rows").querySelectorAll("tr[data-id]")].forEach((tr) =>
+        tr.addEventListener("click", () => select(tr)));
+    } catch (err) {
+      $("status").textContent = `lookup failed: ${err.message}`;
+    }
+  }
+
+  async function select(tr) {
+    [...$("rows").children].forEach((r) => r.classList.remove("active"));
+    tr.classList.add("active");
+    const res = await fetch(`/api/v1/nodes/${encodeURIComponent(tr.dataset.id)}`);
+    if (!res.ok) { $("detail").innerHTML = `<p class="meta">not found</p>`; return; }
+    const e = await res.json();
+    $("detail").innerHTML = `
+      <span class="chip ${e.kind}">${e.kind}</span>
+      <h2>${e.label}</h2>
+      <div class="id">${e.id}</div>
+      <h3>Subsystems (${e.subsystems.length})</h3>
+      <ul>${e.subsystems.map((s) => `<li>${s}</li>`).join("")}</ul>
+      <h3>Record</h3>
+      <pre>${JSON.stringify(e.meta, null, 1)}</pre>`;
+  }
+
+  $("controls").addEventListener("submit", (ev) => { ev.preventDefault(); page = 1; load(); });
+  $("prev").addEventListener("click", () => { page--; load(); });
+  $("next").addEventListener("click", () => { page++; load(); });
+  load();
+</script>
+</body>
+</html>

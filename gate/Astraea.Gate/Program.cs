@@ -57,4 +57,30 @@ app.MapPost("/validate-merge", (MergeProposalDto merge) =>
 app.MapPost("/validate-retype", (RetypeProposalDto retype) =>
     Results.Ok(OntologyLaw.ValidateRetype(retype)));
 
+// ---- Traditional lookup: versioned, paged node search over the atlas ------
+var atlasProbes = builder.Configuration["AtlasDir"] is { } configured
+    ? new[] { configured }
+    : AtlasCatalog.DefaultProbePaths(app.Environment.ContentRootPath);
+var catalog = atlasProbes.Select(AtlasCatalog.LoadOrNull).FirstOrDefault(c => c is not null);
+
+app.MapGet("/api/v1/nodes", (string? query, string? kind, int page = 1, int pageSize = 25) =>
+    catalog is null
+        ? Results.Json(new
+        {
+            error = "atlas catalog not present on this deployment",
+            probed = atlasProbes,
+            hint = "set AtlasDir to a directory containing the pipeline's subsystems/ output",
+        }, statusCode: 503)
+        : Results.Ok(catalog.Search(query, kind, page, pageSize)));
+
+app.MapGet("/api/v1/nodes/{id}", (string id) =>
+    catalog is null
+        ? Results.Json(new { error = "atlas catalog not present on this deployment" }, statusCode: 503)
+        : catalog.Find(id) is { } entity
+            ? Results.Ok(entity)
+            : Results.NotFound(new { error = $"no atlas entity with id '{id}'" }));
+
+app.UseStaticFiles();
+app.MapGet("/lookup", () => Results.Redirect("/lookup.html"));
+
 app.Run();
