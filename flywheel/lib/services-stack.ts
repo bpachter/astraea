@@ -135,19 +135,30 @@ export class ServicesStack extends cdk.Stack {
         },
       },
       // The instance role is what lets the running container read that secret.
+      //
+      // 1 vCPU, not the gate's 0.25. Enabling tracing adds a collector sidecar,
+      // and on 0.25 vCPU it competed with gunicorn for exactly the window the
+      // health check measures: four consecutive deployments rolled back, each
+      // reporting a health-check failure the application logs contradicted —
+      // the container booted fine every time. The cost of tracing is not just
+      // the collector's memory, it is the CPU it takes from the app during
+      // startup, when the probe is least forgiving.
       instanceConfiguration: {
-        cpu: "256",
-        memory: "512",
+        cpu: "1024",
+        memory: "2048",
         instanceRoleArn: props.instanceRoleArn,
       },
       observabilityConfiguration: observability,
       healthCheckConfiguration: {
         protocol: "HTTP",
+        // Django's admin login is not a cheap probe — it renders a template and
+        // touches the session backend — so it gets a longer timeout and far more
+        // attempts than the gate's static /healthz.
         path: "/admin/login/",
         interval: 10,
-        timeout: 5,
+        timeout: 10,
         healthyThreshold: 1,
-        unhealthyThreshold: 5,
+        unhealthyThreshold: 10,
       },
     });
     portal.applyRemovalPolicy(cdk.RemovalPolicy.RETAIN);
