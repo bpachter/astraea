@@ -21,3 +21,7 @@ staticfiles/
 # OS / editor
 .DS_Store
 Thumbs.db
+
+# CDK
+flywheel/cdk.out/
+flywheel/node_modules/
