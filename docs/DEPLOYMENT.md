@@ -86,6 +86,27 @@ Two failures the deployment found that no local test could:
    gate's allow-list alongside the portal — verified allowed, and verified that
    an arbitrary origin still is not.
 
+**Phase 3 SHIPPED.** Every push to `main` now tests, builds, publishes to ghcr
+and ECR, syncs the static app to S3, deploys both services, and smoke-tests the
+live URLs — authenticating with an OIDC-federated role. No AWS key exists in
+this repository or in GitHub secrets.
+
+Two roles, because the jobs have different risk: `astraea-github-build` (ECR
+push only) is assumed by the jobs that execute third-party dependency code;
+`astraea-github-deploy` (App Runner deploy + the recon bucket) is assumed only
+by the deploy job, which installs nothing. An adversarial review of the first
+version found and drove out four real problems — a workflow-wide `id-token`
+that let `npm ci` mint a deploy token, `UpdateService` that could have pointed
+production at an arbitrary public image, `DescribeService` returning
+`DJANGO_SECRET_KEY` in plaintext, and mutable action tags in credentialed jobs.
+
+A third trap worth recording: **GitHub now mints immutable OIDC subject
+claims** — `repo:bpachter@146277210/astraea@1333493731:ref:refs/heads/main`,
+not the `repo:owner/name` form most documentation still shows. A `StringEquals`
+pin against the old form is denied with a bare "Not authorized to perform
+sts:AssumeRoleWithWebIdentity". Both exact subjects are now listed; the pin
+stays exact rather than degrading to a wildcard.
+
 CloudFront remains the scripted follow-up, after the domain/cert decision.
 
 ## Phases
