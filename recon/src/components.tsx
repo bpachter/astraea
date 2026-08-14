@@ -40,7 +40,7 @@ export function Header({
           ATLAS
         </button>
       </nav>
-      <span className="mr-tag">PRINCIPAL SDE INTERVIEW</span>
+      <span className="mr-tag">ARCHITECTURE BRIEFING</span>
       <span className="mr-prepared">PREPARED AUG 13, 2026</span>
       <div className="mr-toggle" role="group" aria-label="Theme">
         <button className={theme === "light" ? "active" : ""} onClick={() => onTheme("light")}>
@@ -85,9 +85,9 @@ export function Intro({
   return (
     <section>
       <div className="mr-kicker">
-        {graph.meta.kicker ?? "KNOWLEDGE-GRAPH RECON — JOB DESCRIPTION + PUBLIC SOURCES ONLY"}
+        {graph.meta.kicker ?? "KNOWLEDGE-GRAPH RECON — PUBLIC SOURCES ONLY"}
       </div>
-      <h1 className="mr-h1">{graph.meta.headline ?? "The platform behind the job"}</h1>
+      <h1 className="mr-h1">{graph.meta.headline ?? "The platform, reconstructed"}</h1>
       <p className="mr-lede">{graph.meta.purpose}</p>
       <div className="mr-legend-row">
         <span className="mr-legend-item">
@@ -208,7 +208,7 @@ export function Dossier({
         ))}
         {node.undrawnRelation ? <div className="mr-undrawn">{node.undrawnRelation}</div> : null}
 
-        <div className="mr-section-heading">ASK IN THE INTERVIEW</div>
+        <div className="mr-section-heading">QUESTIONS WORTH ASKING</div>
         {node.questions.map((q, i) => (
           <div key={i} className="mr-ask">
             <span className="mr-ask-no">{i + 1}</span>

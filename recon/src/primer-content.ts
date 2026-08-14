@@ -2,7 +2,7 @@
 // lecture series (The Metabolomics Innovation Centre / D. Wishart),
 // youtube.com/watch?v=VSaybKFQnqM. Original prose; foundations first,
 // implications last. The wording of the science follows the lectures; the
-// implications chapter is this author's read for the Metabolon interview.
+// implications chapter is this author's read for metabolomics platform work.
 
 export interface PrimerTerm {
   term: string;
@@ -49,7 +49,7 @@ export interface PrimerTrack {
 export const PRIMER_TITLE = "Metabolomics, from zero";
 export const PRIMER_LEDE =
   "A hand-holding walkthrough from foundations to the implications that matter " +
-  "in a metabolomics platform interview. Distilled from the TMIC introductory " +
+  "on a metabolomics data platform. Distilled from the TMIC introductory " +
   "lecture series; each chapter ends with self-checks and jump links into the " +
   "architecture recon graph.";
 export const PRIMER_CREDIT =

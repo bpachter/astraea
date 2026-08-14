@@ -3,7 +3,7 @@ import { join } from "node:path";
 import react from "@vitejs/plugin-react";
 import { defineConfig, type Plugin } from "vite";
 
-// Private graph instances (interview prep, client work) live in graphs-local/,
+// Private graph instances (private briefings, client work) live in graphs-local/,
 // OUTSIDE publicDir, so a production build is structurally incapable of
 // shipping them — vite copies public/ wholesale and .gitignore does not apply
 // to builds. This dev-only middleware serves them locally with the same URLs.

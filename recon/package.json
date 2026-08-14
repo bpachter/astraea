@@ -1,7 +1,7 @@
 {
   "name": "astraea-recon",
   "version": "0.1.0",
-  "description": "Architecture Recon — an interview-prep knowledge-graph viewer over a generic lanes/nodes/edges contract",
+  "description": "Architecture Recon — an architecture briefing viewer over a generic lanes/nodes/edges contract",
   "type": "module",
   "private": true,
   "scripts": {

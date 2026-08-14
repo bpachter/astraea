@@ -222,7 +222,7 @@ export function ConfidenceChip({
   const cls = confidence === "JD" ? "jd" : confidence === "PUB" ? "pub" : "inf";
   const label = long
     ? confidence === "JD"
-      ? "STATED IN JD"
+      ? "PRIMARY SOURCE"
       : confidence === "PUB"
         ? "PUBLIC RECORD"
         : "INFERRED — VERIFY"

@@ -35,7 +35,7 @@ flowchart LR
 Why App Runner over the alternatives, in one line each: Lambda would need
 apig-wsgi contortions for Django and buys nothing at this traffic; ECS/Fargate
 is the same containers with more ops surface; Lightsail is cheaper but reads as
-hobbyist in an interview. App Runner is the managed-container story with HTTPS,
+hobbyist in a design review. App Runner is the managed-container story with HTTPS,
 autoscaling, and per-service health checks out of the box.
 
 ## Cost estimate (us-east-1, demo traffic)

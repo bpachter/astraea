@@ -7,7 +7,7 @@ obj/
 # Node / recon viewer
 node_modules/
 recon/dist/
-# Private graph instances (interview prep, client work) — served in dev by
+# Private graph instances (private briefings, client work) — served in dev by
 # the vite private-graphs middleware, never present in builds.
 recon/graphs-local/
 

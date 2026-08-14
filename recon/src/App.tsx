@@ -9,6 +9,7 @@ import {
   Shortlist,
   Thesis,
 } from "./components";
+import { LockGate } from "./LockGate";
 import { Primer } from "./Primer";
 import type { EdgeFamily, NodeClass, ReconGraph, ThemeName } from "./types";
 
@@ -122,7 +123,7 @@ export default function App() {
       />
       <div className="mr-container">
         {view === "graph" ? (
-          <>
+          <LockGate>
             <Intro graph={graph} palette={palette} theme={theme} />
             <div className="mr-split">
               <Canvas
@@ -143,7 +144,7 @@ export default function App() {
             <Thesis graph={graph} onJump={selectAndScroll} />
             <Shortlist graph={graph} onJump={selectAndScroll} />
             <Footer disclaimer={graph.meta.disclaimer} />
-          </>
+          </LockGate>
         ) : view === "primer" ? (
           <Primer onJumpToNode={selectAndScroll} />
         ) : (

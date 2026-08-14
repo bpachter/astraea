@@ -97,7 +97,7 @@ export interface ReconGraph {
     purpose: string;
     confidenceLegend: Record<Confidence, string>;
     disclaimer: string;
-    /** Intro overrides; instances without them get the interview-recon defaults. */
+    /** Intro overrides; instances without them get the recon defaults. */
     kicker?: string;
     headline?: string;
   };

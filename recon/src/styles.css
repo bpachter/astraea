@@ -1149,3 +1149,35 @@ h4 {
 .at-equation .at-browse-item {
   font-size: 12px;
 }
+
+/* ---------- lock gate ---------- */
+
+.lg-panel {
+  max-width: 560px;
+  margin-top: 27.2px;
+  padding: 22px 26px 24px;
+  background: var(--color-bg);
+}
+
+.lg-form {
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.lg-form input[type="password"] {
+  font-family: var(--font-body);
+  font-size: 13px;
+  padding: 6px 9px;
+  background: var(--color-bg);
+  color: var(--color-text);
+  border: 1px solid var(--color-divider);
+  width: 260px;
+}
+
+.lg-rejected {
+  margin-top: 12px;
+  font-size: 12.5px;
+  color: var(--mr-accent-deep);
+}
