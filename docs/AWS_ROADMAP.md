@@ -1,7 +1,7 @@
 # Where the AWS architecture goes next
 
-> **Status.** Stages 1, 2, 3 and 6 are shipped; Stage 4 is shipped except
-> X-Ray. No domain purchase was needed — the services live under the existing
+> **Status.** Stages 1, 2, 3, 4 and 6 are shipped — including X-Ray across the
+> portal → gate hop. No domain purchase was needed — the services live under the existing
 > `thessa.space` zone (Cloudflare DNS), which is also the honest place for
 > them: Astraea is the governance layer extracted from Thessa. Stages 5 and 7 remain product
 > decisions. Live: CDN `https://astraea.thessa.space`, dashboards
@@ -85,7 +85,7 @@ free tier covers this traffic. ACM certificates are free.*
 
 ---
 
-## Stage 4 — Observability worth the name ◐ dashboards and alarms shipped, X-Ray pending
+## Stage 4 — Observability worth the name ✅ shipped (structured logs still open)
 
 Right now, "is it healthy?" is answered by curling `/healthz` by hand.
 
@@ -94,10 +94,25 @@ Right now, "is it healthy?" is answered by curling `/healthz` by hand.
   answering 500s at 3am should not wait for a recruiter to discover it.
 - **A dashboard** with request rate, latency, and error rate per service —
   one screenshot that says "this person operates systems".
-- **AWS X-Ray** across the portal → gate hop. That call is currently a black
-  box: X-Ray turns it into a trace with the reconciliation call as a segment,
-  which is exactly the distributed-tracing story the two services exist to
-  tell.
+- **AWS X-Ray** across the portal → gate hop — *shipped*. The service graph
+  shows `astraea-portal → astraea-gate`, so a slow adjudication can be
+  attributed to the side that actually spent the time. Two things this cost,
+  both worth knowing before you enable tracing on App Runner:
+
+  - **Pin your OpenTelemetry versions.** `Version="*"` resolved the AWS
+    extension to 1.2.0 against an SDK at 1.17.0. The old `AddXRayTraceId()`
+    silently stopped hooking id generation, so the gate emitted ordinary random
+    trace ids. X-Ray requires the leading 8 hex characters to be the epoch
+    second and **discards ids that are not, without an error on any surface** —
+    the service was healthy, the collector was running, spans were leaving the
+    process, and nothing arrived. The current package is
+    `OpenTelemetry.Extensions.AWS`.
+  - **Tracing costs CPU, not just memory.** Enabling observability adds a
+    collector beside your container. On the portal's 0.25 vCPU it took enough
+    from gunicorn during startup that the health check failed four deployments
+    in a row — each rolled back blaming the health check, while the application
+    log showed a clean boot every time. It deploys at 1 vCPU with a probe sized
+    for rendering Django's admin login rather than serving a static file.
 - **Structured logs.** Both services log human-readable lines today. JSON with
   a request id makes CloudWatch Logs Insights queryable —
   `fields @timestamp, verdict | filter verdict != "publishable"` is a real
