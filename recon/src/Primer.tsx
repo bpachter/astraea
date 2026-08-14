@@ -164,7 +164,7 @@ export function Primer({ onJumpToNode }: { onJumpToNode: (id: string) => void })
         </article>
       </div>
 
-      <footer className="mr-footer">{track.credit}</footer>
+      {track.credit ? <footer className="mr-footer">{track.credit}</footer> : null}
     </section>
   );
 }

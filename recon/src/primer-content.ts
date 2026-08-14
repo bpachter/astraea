@@ -52,10 +52,7 @@ export const PRIMER_LEDE =
   "on a metabolomics data platform. Distilled from the TMIC introductory " +
   "lecture series; each chapter ends with self-checks and jump links into the " +
   "architecture recon graph.";
-export const PRIMER_CREDIT =
-  "Source material: “An Introduction to Metabolomics” lecture series, The " +
-  "Metabolomics Innovation Centre (Wishart lab) — YouTube playlist " +
-  "PLE20foNk9J6IGPVSFkfn6U7lmUzFvWPYQ. Prose is original; errors are the distiller's.";
+export const PRIMER_CREDIT = "";
 
 export const PRIMER_CHAPTERS: PrimerChapter[] = [
   {

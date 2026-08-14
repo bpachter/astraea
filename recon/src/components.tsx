@@ -41,7 +41,6 @@ export function Header({
         </button>
       </nav>
       <span className="mr-tag">ARCHITECTURE BRIEFING</span>
-      <span className="mr-prepared">PREPARED AUG 13, 2026</span>
       <div className="mr-toggle" role="group" aria-label="Theme">
         <button className={theme === "light" ? "active" : ""} onClick={() => onTheme("light")}>
           LIGHT
