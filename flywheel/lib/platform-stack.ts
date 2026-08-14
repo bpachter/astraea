@@ -1,4 +1,5 @@
 import * as cdk from "aws-cdk-lib";
+import * as acm from "aws-cdk-lib/aws-certificatemanager";
 import * as cloudfront from "aws-cdk-lib/aws-cloudfront";
 import { S3BucketOrigin } from "aws-cdk-lib/aws-cloudfront-origins";
 import * as cloudwatch from "aws-cdk-lib/aws-cloudwatch";
@@ -9,6 +10,12 @@ import * as subscriptions from "aws-cdk-lib/aws-sns-subscriptions";
 import type { Construct } from "constructs";
 
 export interface PlatformStackProps extends cdk.StackProps {
+  /**
+   * Custom domain for the app, once its certificate is validated. Left unset
+   * the distribution serves only its cloudfront.net name, so the stack is
+   * deployable before DNS exists — the alias is additive, not a precondition.
+   */
+  appDomain?: { name: string; certificateArn: string };
   /** Bucket holding the compiled recon app; created by the ship script. */
   reconBucketName: string;
   /** App Runner services to watch: the id is the GUID tail of the ARN. */
@@ -52,6 +59,18 @@ export class PlatformStack extends cdk.Stack {
       ],
       priceClass: cloudfront.PriceClass.PRICE_CLASS_100, // NA + EU: cheapest
       comment: "Astraea recon app",
+      // CloudFront only accepts certificates from us-east-1, whatever region
+      // the distribution's other resources live in.
+      ...(props.appDomain
+        ? {
+            domainNames: [props.appDomain.name],
+            certificate: acm.Certificate.fromCertificateArn(
+              this,
+              "AppCertificate",
+              props.appDomain.certificateArn,
+            ),
+          }
+        : {}),
     });
 
     // fromBucketName gives an immutable reference, so the read grant is
