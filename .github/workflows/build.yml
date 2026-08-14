@@ -1,10 +1,9 @@
-# Build, test, and publish Astraea's images.
+# Build, test, publish, and deploy Astraea.
 #
-# Runners build the containers (registry access is clean from GitHub's
-# network) and publish to GitHub Container Registry; the AWS ship pulls from
-# ghcr and pushes to ECR. Phase 3 extends the publish job with an
-# OIDC-assumed IAM role to deploy App Runner + S3 directly — no long-lived
-# AWS keys in this repository, ever.
+# Tests gate the images; images publish to both GitHub Container Registry and
+# ECR; a final job deploys the two App Runner services and syncs the static
+# app to S3. AWS access is an OIDC-federated role assumed per job — there is
+# no long-lived AWS key in this repository or in GitHub secrets.
 name: build
 
 on:
@@ -15,6 +14,12 @@ on:
 permissions:
   contents: read
   packages: write
+  id-token: write # required to request the OIDC token
+
+env:
+  AWS_REGION: us-east-2
+  AWS_ROLE: arn:aws:iam::793140950071:role/astraea-github-deploy
+  ECR_REGISTRY: 793140950071.dkr.ecr.us-east-2.amazonaws.com
 
 jobs:
   gate:
@@ -32,12 +37,20 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build and push image
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.AWS_ROLE }}
+          aws-region: ${{ env.AWS_REGION }}
+      - uses: aws-actions/amazon-ecr-login@v2
+      - name: Build and push
         run: |
           docker build -f gate/Dockerfile \
-                       -t ghcr.io/${{ github.repository }}-gate:latest \
-                       -t ghcr.io/${{ github.repository }}-gate:${{ github.sha }} .
+            -t ghcr.io/${{ github.repository }}-gate:latest \
+            -t ghcr.io/${{ github.repository }}-gate:${{ github.sha }} \
+            -t $ECR_REGISTRY/astraea-gate:latest \
+            -t $ECR_REGISTRY/astraea-gate:${{ github.sha }} .
           docker push --all-tags ghcr.io/${{ github.repository }}-gate
+          docker push --all-tags $ECR_REGISTRY/astraea-gate
 
   portal:
     runs-on: ubuntu-latest
@@ -57,12 +70,20 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build and push image
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.AWS_ROLE }}
+          aws-region: ${{ env.AWS_REGION }}
+      - uses: aws-actions/amazon-ecr-login@v2
+      - name: Build and push
         run: |
           docker build -f portal/Dockerfile \
-                       -t ghcr.io/${{ github.repository }}-portal:latest \
-                       -t ghcr.io/${{ github.repository }}-portal:${{ github.sha }} .
+            -t ghcr.io/${{ github.repository }}-portal:latest \
+            -t ghcr.io/${{ github.repository }}-portal:${{ github.sha }} \
+            -t $ECR_REGISTRY/astraea-portal:latest \
+            -t $ECR_REGISTRY/astraea-portal:${{ github.sha }} .
           docker push --all-tags ghcr.io/${{ github.repository }}-portal
+          docker push --all-tags $ECR_REGISTRY/astraea-portal
 
   recon:
     runs-on: ubuntu-latest
@@ -80,3 +101,55 @@ jobs:
         with:
           name: recon-dist
           path: recon/dist
+
+  deploy:
+    needs: [gate, portal, recon]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.AWS_ROLE }}
+          aws-region: ${{ env.AWS_REGION }}
+      - uses: actions/download-artifact@v4
+        with:
+          name: recon-dist
+          path: dist
+      - name: Sync the static app to S3
+        run: aws s3 sync dist s3://astraea-recon-793140950071 --delete
+      - name: Deploy both services
+        run: |
+          set -euo pipefail
+          # start-deployment forces a fresh pull of :latest. update-service
+          # would be a no-op here: the configuration has not changed, only the
+          # image behind the tag.
+          for svc in astraea-gate astraea-portal; do
+            arn=$(aws apprunner list-services --region "$AWS_REGION" \
+              --query "ServiceSummaryList[?ServiceName=='$svc'].ServiceArn" --output text)
+            aws apprunner start-deployment --service-arn "$arn" --region "$AWS_REGION" >/dev/null
+            echo "deploying $svc"
+          done
+      - name: Wait for both services to report RUNNING
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 40); do
+            statuses=$(aws apprunner list-services --region "$AWS_REGION" \
+              --query "ServiceSummaryList[?starts_with(ServiceName, 'astraea-')].Status" --output text)
+            echo "attempt $attempt: $statuses"
+            case "$statuses" in
+              *FAILED*) echo "::error::a service entered a failed state"; exit 1 ;;
+            esac
+            if [ "$statuses" = "RUNNING	RUNNING" ] || [ "$statuses" = "RUNNING RUNNING" ]; then
+              echo "both services RUNNING"; exit 0
+            fi
+            sleep 30
+          done
+          echo "::error::timed out waiting for services"; exit 1
+      - name: Smoke-test the deployment
+        run: |
+          set -euo pipefail
+          gate=https://wmc38pwmtw.us-east-2.awsapprunner.com
+          portal=https://zsc9c6t7g3.us-east-2.awsapprunner.com
+          curl -fsS "$gate/healthz" | grep -q '"status":"ok"'
+          curl -fsS "$gate/api/v1/nodes?pageSize=1" | grep -q '"total_items"'
+          curl -fsS -o /dev/null -w '%{http_code}\n' "$portal/admin/login/" | grep -q 200
+          echo "smoke tests passed"
