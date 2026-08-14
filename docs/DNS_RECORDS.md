@@ -8,6 +8,12 @@ validation records must stay DNS-only permanently; the three app
 subdomains can be switched to Proxied later if you want Cloudflare's CDN
 in front.
 
+**Fastest path:** DNS → Records → **Import**, and upload
+[`astraea-thessa-space.zone`](astraea-thessa-space.zone) from this directory —
+all eight records at once. Then check the Proxy status column and set anything
+showing "Proxied" back to "DNS only". The manual table below is the same
+records, if you prefer adding them one at a time.
+
 Names below are already in Cloudflare's short form — it appends
 `.thessa.space` for you. Every record is type **CNAME**, TTL **Auto**.
 

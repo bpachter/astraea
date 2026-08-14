@@ -1,0 +1,18 @@
+;; Astraea on thessa.space — import into Cloudflare (DNS > Records > Import)
+;; Adds only new names: the apex, send.*, and the _railway/_domainkey
+;; records already in the zone are untouched.
+;;
+;; After importing, confirm every one of these 8 rows shows "DNS only".
+;; Proxying breaks AWS certificate validation and loops App Runner's TLS.
+
+;; --- certificate validation (must remain DNS only forever) ---
+_1808b2c3c64adc79427b20a68e0894d2.astraea.thessa.space.	1	IN	CNAME	_646c68def4c10359e7a434b530199b94.jkddzztszm.acm-validations.aws.
+_9e218172879b4d97cf7572f4794dec37.gate.thessa.space.	1	IN	CNAME	_955f399b6984d035d3e7f35a1f847cb4.jkddzztszm.acm-validations.aws.
+_0677c7cf67425905a4994893f98cf072.e9rzjo29aoca0p9z0bc9k146ubdkrn5.gate.thessa.space.	1	IN	CNAME	_856ba9e8b6dd4e2711dc24160d6e26c5.jkddzztszm.acm-validations.aws.
+_830dcac043a5f0ff80fe75a1ede127ee.portal.thessa.space.	1	IN	CNAME	_d90192afe32cbc0a6b8e37b44840bd07.jkddzztszm.acm-validations.aws.
+_d9ab89b0cbf297b380c657e237ebc2b6.l3apfh4e13u1942arb8izbds7y3b9zq.portal.thessa.space.	1	IN	CNAME	_2cdb67c6214e53dea77f850e48a0dd56.jkddzztszm.acm-validations.aws.
+
+;; --- the three subdomains ---
+astraea.thessa.space.	1	IN	CNAME	d2ff2qmnyf4i32.cloudfront.net.
+gate.thessa.space.	1	IN	CNAME	wmc38pwmtw.us-east-2.awsapprunner.com.
+portal.thessa.space.	1	IN	CNAME	zsc9c6t7g3.us-east-2.awsapprunner.com.
