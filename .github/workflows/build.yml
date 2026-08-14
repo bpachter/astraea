@@ -34,8 +34,9 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build and push image
         run: |
-          docker build -t ghcr.io/${{ github.repository }}-gate:latest \
-                       -t ghcr.io/${{ github.repository }}-gate:${{ github.sha }} gate
+          docker build -f gate/Dockerfile \
+                       -t ghcr.io/${{ github.repository }}-gate:latest \
+                       -t ghcr.io/${{ github.repository }}-gate:${{ github.sha }} .
           docker push --all-tags ghcr.io/${{ github.repository }}-gate
 
   portal:

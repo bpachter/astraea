@@ -3,7 +3,9 @@
 # gate: http://localhost:5210/healthz.
 services:
   gate:
-    build: ./gate
+    build:
+      context: .
+      dockerfile: gate/Dockerfile
     ports:
       - "5210:8080"
   portal:
