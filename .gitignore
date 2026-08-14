@@ -1,6 +1,9 @@
-# .NET
-bin/
-obj/
+# .NET build output. Scoped to gate/ deliberately: a bare `bin/` also matches
+# flywheel/bin/, which holds the CDK app's entry point — CI caught that only
+# because synthesis failed on a file that exists locally and was never
+# committed.
+gate/**/bin/
+gate/**/obj/
 *.user
 .vs/
 
