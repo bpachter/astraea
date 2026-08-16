@@ -2,6 +2,23 @@
 
 AI proposes. A typed service verifies. A human governs. Only then does the graph publish.
 
+<p>
+  <img src="https://img.shields.io/badge/gate-C%23_/_.NET_8-512BD4?logo=dotnet&logoColor=white" alt=".NET 8" />
+  <img src="https://img.shields.io/badge/portal-Django_5_+_DRF-092E20?logo=django&logoColor=white" alt="Django 5" />
+  <img src="https://img.shields.io/badge/recon-React_18_+_TypeScript-61DAFB?logo=react&logoColor=black" alt="React 18" />
+  <img src="https://img.shields.io/badge/tests-xUnit_·_Django_·_shared_fixtures-2EAD33" alt="Tests" />
+  <img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT" />
+</p>
+
+> **In one minute.** Astraea is quality control for AI-generated facts. A modern language
+> model can read thousands of regulatory filings and propose facts like *"Company A supplies
+> Company B"* or *"Segment X earned $2.1B"* — and it can also produce numbers that look
+> right and are wrong. Astraea is the machinery that stands between those proposals and a
+> database people trust: a deterministic C# service that re-checks every number against the
+> filing it came from, a Django portal where a human approves or rejects each proposal, and
+> a rule enforced *in code* that nothing can be approved without a passing check.
+> **AI drafts. Code verifies. A person signs.** Everything below is that sentence, built.
+
 Astraea is the governance apparatus pattern extracted from [Thessa](https://thessa.space),
 a supply/value-chain knowledge graph whose value is that the numbers in it are **true**.
 An autonomous extraction flywheel can propose thousands of facts; the one thing it must
@@ -28,6 +45,8 @@ flowchart LR
   Human-in-the-loop curation is a CRUD-and-permissions problem, and the Django admin is
   the best CRUD-and-permissions machine ever shipped — approve/reject actions, failure-mode
   filters, and a hard refusal to approve anything the gate has not passed.
+
+![The recon viewer's front door — the whole system in one claim](docs/media/recon-start.png)
 
 ## Why the gate exists
 
@@ -136,6 +155,11 @@ Beyond revenue reconciliation, the gate enforces the graph's identity rules:
 
 ## Calibrated confidence (powerscope's conformal pattern)
 
+*Plain English first: when the AI says "I'm 84% sure", that's a self-report, not a
+measurement. This section converts self-reports into evidence — by checking, over
+1,691 human-adjudicated cases, how often each level of claimed confidence was actually
+upheld — so a downstream consumer can act on a probability that has been earned.*
+
 An extraction confidence is an assertion; the gate turns it into a measurement.
 `manage.py calibrate_confidence` fits a split-conformal table (deciles of raw
 confidence -> empirical adjudicator precision, monotone by cumulative max) from
@@ -213,13 +237,17 @@ introductory lecture series), with self-checks and jump links into the graph.
 Edge routing (anchor bucketing + cubic Béziers), the blueprint visual system, and
 light/dark theming follow the design handoff this app was ported from.
 
+![PRIMER — metabolomics from zero, nine chapters with self-checks](docs/media/primer.png)
+
 ### The layered-omics atlas (`ATLAS` view)
 
 The third view renders the classic omics pyramid — genome below, metabolome on
 top — as a navigable 3D structure, one metabolic subsystem at a time, built from
 **Human-GEM** (SysBioChalmers' genome-scale metabolic model of *Homo sapiens*,
 CC-BY-4.0): 2,848 genes connect through 12,931 reactions to 8,461 metabolites
-across 147 subsystems. Genes rise through the reactions they enable (Human-GEM
+across 147 subsystems.
+
+![ATLAS — the omics pyramid in data: genes rise through reactions to metabolites](docs/media/atlas.png) Genes rise through the reactions they enable (Human-GEM
 encodes the proteome implicitly, as gene–reaction rules — the METHODS panel
 says so out loud) to the metabolites those reactions transform. Every node
 carries its formal identifiers (Ensembl, UniProt, EC, HMDB, KEGG, ChEBI) with
